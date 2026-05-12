@@ -1,6 +1,8 @@
 package com.grupo12.Voy.features.users.models;
 
-import com.grupo12.Voy.features.roles.models.RoleEntity;
+import com.grupo12.Voy.features.parties.models.PartyEntity;
+import com.grupo12.Voy.features.tickets.models.TicketEntity;
+import com.grupo12.Voy.features.users.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.ColumnDefault;
@@ -25,17 +27,46 @@ public class UserEntity {
     private String password;
 
     @ColumnDefault("false")
-    private Boolean accesibility;
+    private Boolean accesibilityUser;
 
     @NotNull
     @Column(name = "fecha_nacimiento")
     private Date birthDate;
 
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "roles_usuario", joinColumns = @JoinColumn(name = "roles"))
+    private Set<Role> role;
+
     @ManyToMany
-    @JoinTable(name = "rol_por_usuario",
-                joinColumns = @JoinColumn(name = "usuario_id"),
-                inverseJoinColumns = @JoinColumn(name = "rol_id"))
-    private Set<RoleEntity> role;
+    @JoinTable(
+            name = "usuarios_seguidos",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_seguido")
+    )
+    private Set<UserEntity> followsSet;
+
+    @ManyToMany(mappedBy = "followsSet")
+    private Set<UserEntity> followersSet;
+
+    @ManyToMany
+    @JoinTable(
+            name = "eventos_seguidos",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_evento")
+    )
+    private Set<PartyEntity> followedParties;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "eventos_creados",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_eventos")
+    )
+    private Set<PartyEntity> myParties;
+
+    @OneToMany
+    private Set<TicketEntity> myTickets;
 
     @PrePersist
     public void onSave(){

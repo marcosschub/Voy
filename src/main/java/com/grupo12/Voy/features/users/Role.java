@@ -1,4 +1,4 @@
-package com.grupo12.Voy.features.roles;
+package com.grupo12.Voy.features.users;
 
 public enum Role {
     PARTICIPANT,
