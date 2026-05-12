@@ -1,13 +1,13 @@
 package com.grupo12.Voy.features.tickets.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Embeddable
-public class TicketDescriptionEntity {
+@Entity
+@Table(name = "facturas")
+public class ReceiptEntity {
     @Column(name = "precio")
     private BigDecimal price;
 

@@ -3,6 +3,7 @@ package com.grupo12.Voy.features.tickets.models;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.persistence.*;
+import lombok.Builder;
 
 @Entity
 @Table(name = "entradas")
@@ -20,6 +21,10 @@ public class TicketEntity {
     @JoinColumn(name = "id_evento", nullable = false)
     private PartyEntity party;
 
-    @Embedded
-    private TicketDescriptionEntity ticketDescriptionEntity;
+
+    private Boolean confirmed;
+
+    @ManyToOne
+    @JoinColumn(name = "id_factura", nullable = false)
+    private ReceiptEntity receiptEntity;
 }
