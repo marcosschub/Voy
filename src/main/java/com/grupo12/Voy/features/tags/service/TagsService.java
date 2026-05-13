@@ -2,7 +2,9 @@ package com.grupo12.Voy.features.tags.service;
 
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
 import com.grupo12.Voy.common.exceptions.InvalidFieldException;
+import com.grupo12.Voy.features.tags.ITagsService;
 import com.grupo12.Voy.features.tags.TagsRepository;
+import com.grupo12.Voy.features.tags.dto.TagsDTO;
 import com.grupo12.Voy.features.tags.models.TagsEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,19 +12,19 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class TagsService {
+public class TagsService implements ITagsService {
     private final TagsRepository tagsRepository;
 
-    public List<TagsEntity> getAll(){
-        return tagsRepository.findAll();
+    public List<TagsDTO> getAll(){
+        return tagsRepository.findAll()
+                .stream()
+                .map();
     }
 
-    public TagsEntity getById(Long id){
-        return tagsRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada"));
-    }
 
     public TagsEntity getByName(String nameTag){
-        return tagsRepository.findByName(nameTag.toUpperCase()).orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada"));
+        return tagsRepository.findByName(nameTag.toUpperCase())
+                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada"));
     }
 
     public void createTag(String nameTag){
@@ -30,11 +32,12 @@ public class TagsService {
             throw new InvalidFieldException("No puede estar en blanco o vacio");
         TagsEntity tag = new TagsEntity();
         tag.setName(nameTag.toUpperCase());
-        tagsRepository.save(tag);
+        ITagsRepository.save(tag);
     }
 
     public void deleteByName(String nameTag){
-        tagsRepository.delete(tagsRepository.findByName(nameTag.toUpperCase()).orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada")));
+        ITagsRepository.delete(ITagsRepository.findByName(nameTag.toUpperCase())
+                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada")));
     }
 
 
