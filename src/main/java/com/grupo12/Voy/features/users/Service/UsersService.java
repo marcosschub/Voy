@@ -70,9 +70,7 @@ public class UsersService {
            user.setPassword(userDto.password());
        }
 
-       userRepository.save(user); //TODO
-
-       return userMapper.userToDto(user);
+       return userMapper.userToDto(userRepository.save(user));
     }
 
 
