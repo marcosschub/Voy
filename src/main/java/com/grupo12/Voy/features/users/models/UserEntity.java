@@ -5,6 +5,7 @@ import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import com.grupo12.Voy.features.users.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
@@ -13,6 +14,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name ="usuarios")
+@Getter
+@Setter
+@AllArgsConstructor
+@Builder
+@NoArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +27,10 @@ public class UserEntity {
     private UUID idExternal;
 
     @NotNull
+    private String userName;
+
+    @NotNull
+    @Column(unique = true)
     private String email;
 
     @NotNull
