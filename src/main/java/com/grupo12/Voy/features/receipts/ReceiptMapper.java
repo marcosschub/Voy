@@ -1,0 +1,21 @@
+package com.grupo12.Voy.features.receipts;
+
+import com.grupo12.Voy.features.receipts.DTO.ReceiptRequestDTO;
+import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
+import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+@Mapper(componentModel = "spring")
+public interface ReceiptMapper {
+
+    @Mapping(target = "userEmail", source = "user.email")
+    ReceiptResponseDTO toResponseDTO(ReceiptEntity entity);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "externalId", ignore = true)
+    @Mapping(target = "finalPrice", ignore = true)
+    @Mapping(target = "paymentDate", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    ReceiptEntity toEntity(ReceiptRequestDTO request);
+}
