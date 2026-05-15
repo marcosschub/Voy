@@ -9,7 +9,9 @@ public interface ITagService {
 
     TagsDTO findByName(String name);
 
-    void save(TagsDTO tagsDTO);
+    TagsDTO save(TagsDTO tagsDTO);
+
+    TagsDTO update(String oldName, TagsDTO tagsDTO);
 
     void delete(TagsDTO tagsDTO);
 }

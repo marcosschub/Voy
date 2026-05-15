@@ -1,5 +1,6 @@
 package com.grupo12.Voy.features.tags.service;
 
+import com.grupo12.Voy.common.exceptions.EntityDuplicatedException;
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
 import com.grupo12.Voy.features.tags.ITagService;
 import com.grupo12.Voy.features.tags.TagsRepository;
@@ -30,22 +31,37 @@ public class TagService implements ITagService {
 
     @Override
     public TagsDTO findByName(String name){
-        TagEntity tag = tagsRepository
+        TagEntity tag = tagMapper.toEntity(tagsRepository
                 .findByName(name.toUpperCase())
-                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada"));
+                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada")));
         return tagMapper.toDto(tag);
     }
 
     @Override
-    public void save(TagsDTO tagsDTO){
+    public TagsDTO save(TagsDTO tagsDTO){
         tagsRepository
-                .save(tagMapper.toEntity(tagsDTO));
+                .findByName(tagsDTO.getName())
+                .orElseThrow(() -> new EntityDuplicatedException("La etiqueta ya existe"));
+        tagsDTO.setName(tagsDTO.getName());
+        return tagMapper.toDto(tagsRepository
+                .save(tagMapper.toEntity(tagsDTO)));
+    }
+
+    @Override
+    public TagsDTO update(String oldname, TagsDTO tagsDTO){
+        TagEntity tag = tagMapper
+                            .toEntity(tagsRepository.findByName(oldname)
+                            .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada")));
+        tag.setName(tagsDTO.getName());
+        tagsRepository.save(tag);
+        return tagMapper.toDto(tag);
     }
 
     @Override
     public void delete(TagsDTO tagsDTO){
-        tagsRepository
-                .delete(tagsRepository.findByName(tagsDTO.name().toUpperCase())
-                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada")));
+        TagEntity tag = tagMapper
+                            .toEntity(tagsRepository.findByName(tagsDTO.getName().toUpperCase())
+                            .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada")));
+        tagsRepository.delete(tag);
     }
 }
