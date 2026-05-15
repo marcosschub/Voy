@@ -21,7 +21,6 @@ public class UsersService {
 
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private NewUserDtoMapper newUserDtoMapper;
 
@@ -35,8 +34,8 @@ public class UsersService {
                 .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado."));
     }
 
-    public List<UserEntity> getAll(){
-        return userRepository.findAll();
+    public List<UserDto> getAll(){
+        return userRepository.findAll().stream().map(userMapper::userToDto).toList();
     }
 
     public UserDto findByEmail(String userEmail){

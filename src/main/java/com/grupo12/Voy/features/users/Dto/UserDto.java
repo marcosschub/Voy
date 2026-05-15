@@ -4,5 +4,5 @@ import java.util.UUID;
 
 
 //Equal y hash sobreescribir //TODO
-public record UserDto(UUID userId, String userName, String userEmail, String password){
+public record UserDto(UUID userId, String userName, String email, String password){
 }
