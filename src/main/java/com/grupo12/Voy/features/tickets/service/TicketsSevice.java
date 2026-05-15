@@ -138,15 +138,16 @@ public class TicketsSevice {
         UserEntity user = userRepository.findByIdExternal(newUserExtID)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado"));
         ticket.setUser(user);
-        ticketRepository.save(ticket);
-        return
+        TicketEntity ticket1 = ticketRepository.save(ticket);
+        return ticketMapper.toResponseDto(ticket1);
     }
 
-    public void acceptTicket(UUID externalId){
+    public TicketResponseDTO acceptTicket(UUID externalId){
         TicketEntity ticket = ticketRepository.findByIdExternal(externalId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el ticket"));
         ticket.setConfirmed(true);
-        ticketRepository.save(ticket);
+        TicketEntity ticket1 =  ticketRepository.save(ticket);
+        return ticketMapper.toResponseDto(ticket1);
     }
 
     public void returnTicket(UUID externalId){
