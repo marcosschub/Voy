@@ -6,10 +6,9 @@ import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface ReceiptMapper {
 
-    @Mapping(target = "userEmail", source = "user.email")
     ReceiptResponseDTO toResponseDTO(ReceiptEntity entity);
 
     @Mapping(target = "id", ignore = true)

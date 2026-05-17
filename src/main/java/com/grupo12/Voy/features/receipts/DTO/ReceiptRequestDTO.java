@@ -23,6 +23,6 @@ public class ReceiptRequestDTO {
     @NotNull
     @Positive
     private Integer quantity;
-    @Email
-    private String userEmail;
+    @NotNull
+    private UserDto user;
 }
