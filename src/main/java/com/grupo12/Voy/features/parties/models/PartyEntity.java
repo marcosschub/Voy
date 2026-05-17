@@ -4,12 +4,15 @@ import com.grupo12.Voy.features.tags.models.TagsEntity;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
-
+@Getter
+@Setter
 @Entity
 @Table(name = "eventos")
 public class PartyEntity {
@@ -25,7 +28,7 @@ public class PartyEntity {
     private UserEntity organizer;
 
     @Column(name = "titulo", nullable = false)
-    private String tittle;
+    private String title;
 
     @Column(name = "tipo")
     @ColumnDefault("False")
