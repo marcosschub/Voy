@@ -1,7 +1,6 @@
 package com.grupo12.Voy.features.parties.Dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,9 +17,9 @@ public class PartyReqDTO {
     @NotBlank(message = "El titulo es obligatorio")
     private String title;
     private String description;
-    @NotEmpty(message = "La ciudad es obligatoria")
+    @NotBlank(message = "La ciudad es obligatoria")
     private String city;
-    @NotEmpty(message = "La direccion es obligatoria")
+    @NotBlank(message = "La direccion es obligatoria")
     private String adress;
     @NotNull(message = "La fecha es obligatoria")
     private LocalDateTime dateTime;
