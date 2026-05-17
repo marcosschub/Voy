@@ -14,6 +14,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name ="usuarios")
+@Getter
+@Setter
+@AllArgsConstructor
+@Builder
+@NoArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +27,10 @@ public class UserEntity {
     private UUID idExternal;
 
     @NotNull
+    private String userName;
+
+    @NotNull
+    @Column(unique = true)
     private String email;
 
     @NotNull

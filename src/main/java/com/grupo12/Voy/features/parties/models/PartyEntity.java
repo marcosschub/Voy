@@ -28,7 +28,7 @@ public class PartyEntity {
     private UserEntity organizer;
 
     @Column(name = "titulo", nullable = false)
-    private String tittle;
+    private String title;
 
     @Column(name = "tipo")
     @ColumnDefault("False")
