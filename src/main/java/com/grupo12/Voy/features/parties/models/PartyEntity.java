@@ -37,8 +37,8 @@ public class PartyEntity {
     @Enumerated
     @ManyToMany
     @JoinTable(name = "etiquetas_por_evento",
-               joinColumns = @JoinColumn(name = "evento_id"),
-                inverseJoinColumns = @JoinColumn(name = "etiquetas_id"))
+            joinColumns = @JoinColumn(name = "evento_id"),
+            inverseJoinColumns = @JoinColumn(name = "etiquetas_id"))
     private Set<TagsEntity> tagsSet;
 
     @Column(name = "localidad")
@@ -67,9 +67,9 @@ public class PartyEntity {
     private Boolean state;
 
     @PrePersist
-    public void onSave(){
-        if(state==null){
-            state=true;
+    public void onSave() {
+        if (state == null) {
+            state = true;
         }
     }
 }
