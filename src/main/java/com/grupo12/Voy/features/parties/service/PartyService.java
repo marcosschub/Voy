@@ -36,7 +36,7 @@ public class PartyService {
                 .map(partyMapper::toResDTO)
                 .orElseThrow(()-> new EntityNotFoundException("Evento no encontrado"));
     }
-
+     ///quizas no es necesario///
     public PartyResDTO getById(Long id) {
         return partyMapper.toResDTO(partyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado")));
@@ -51,7 +51,7 @@ public class PartyService {
     }
 
     public PartyResDTO getByTitle(String title) {
-        return partyMapper.toResDTO(partyRepository.findByTitle(title.toUpperCase())
+        return partyMapper.toResDTO(partyRepository.findByTitleAndPartyAccesibility(title.toUpperCase(),true)
                 .orElseThrow(() -> new EntityNotFoundException("Titulo no encontrado")));
     }
 
@@ -59,8 +59,9 @@ public class PartyService {
         return partyMapper.toResDTOList(partyRepository.findByPartyAccesibility(isPublic));
     }
 
+    ///devuelve solo en el caso de ser publico el evento
     public List<PartyResDTO> getByCity(String city) {
-        List<PartyEntity> parties = partyRepository.findByCity(city);
+        List<PartyEntity> parties = partyRepository.findByCityAndPartyAccesibility(city,true);
         if (parties.isEmpty()) {
             throw new EntityNotFoundException("No hay eventos en esta ciudad");
         }
@@ -105,11 +106,12 @@ public class PartyService {
         return partyMapper.toResDTO(partyRepository.save(party));
     }
 
+    ///no elimina de la DB solo cambia el estadoLogico
     public void delete (UUID idExternal){
         PartyEntity party = partyRepository.findByExternalId(idExternal)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
         party.setLogicState(Boolean.FALSE);
-        partyRepository.delete(party);
+        partyRepository.save(party);
     }
 
 }
