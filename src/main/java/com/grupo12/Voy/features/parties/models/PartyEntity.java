@@ -27,14 +27,13 @@ public class PartyEntity {
     @JoinColumn(name = "id_organizador", nullable = false)
     private UserEntity organizer;
 
-    @Column(name = "titulo", nullable = false)
+    @Column(name = "titulo", nullable = false,unique = true)
     private String title;
 
     @Column(name = "tipo")
     @ColumnDefault("False")
     private Boolean partyAccesibility; // publico/privado
 
-    @Enumerated
     @ManyToMany
     @JoinTable(name = "etiquetas_por_evento",
             joinColumns = @JoinColumn(name = "evento_id"),
@@ -68,8 +67,6 @@ public class PartyEntity {
 
     @PrePersist
     public void onSave() {
-        if (state == null) {
-            state = true;
-        }
+        if (state == null) state = true;
     }
 }
