@@ -7,7 +7,7 @@ import com.grupo12.Voy.features.parties.PartyRepository;
 import com.grupo12.Voy.features.parties.mapper.PartyMapper;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.tags.TagsRepository;
-import com.grupo12.Voy.features.tags.models.TagsEntity;
+import com.grupo12.Voy.features.tags.models.TagEntity;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import lombok.AllArgsConstructor;
@@ -78,7 +78,7 @@ public class PartyService {
     public PartyResDTO create(PartyReqDTO dto) {
         UserEntity organizer = userRepository.findById(dto.getIdOrganizer())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer no encontrado"));
-        Set<TagsEntity> tags = new HashSet<>(tagsRepository.findAllById(dto.getTagsIds()));
+        Set<TagEntity> tags = new HashSet<>(tagsRepository.findAllById(dto.getTagsIds()));
 
         PartyEntity party = partyMapper.toEntity(dto);
         party.setOrganizer(organizer);
@@ -99,7 +99,7 @@ public class PartyService {
         party.setDateTime(dto.getDateTime());
         party.setGuestLimit(dto.getGuestLimit());
         if(dto.getTagsIds() != null) {
-            Set<TagsEntity> tags = new HashSet<>(tagsRepository.findAllById(dto.getTagsIds()));
+            Set<TagEntity> tags = new HashSet<>(tagsRepository.findAllById(dto.getTagsIds()));
             party.setTagsSet(tags);
         }
         return partyMapper.toResDTO(partyRepository.save(party));

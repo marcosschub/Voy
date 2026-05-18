@@ -3,7 +3,7 @@ package com.grupo12.Voy.features.parties.mapper;
 import com.grupo12.Voy.features.parties.Dto.PartyReqDTO;
 import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
-import com.grupo12.Voy.features.tags.models.TagsEntity;
+import com.grupo12.Voy.features.tags.models.TagEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -28,10 +28,10 @@ public interface PartyMapper {
     @Mapping(target = "ticketsParty", ignore = true)
     PartyEntity toEntity(PartyReqDTO partyReqDTO);
 
-    default Set<String> tagsToStrings(Set<TagsEntity> tags ){
+    default Set<String> tagsToStrings(Set<TagEntity> tags ){
         if(tags==null) return null;
         return tags.stream()
-                .map(TagsEntity::getName)
+                .map(TagEntity::getName)
                 .collect(Collectors.toSet());
     }
 }
