@@ -1,6 +1,6 @@
 package com.grupo12.Voy.features.parties.models;
 
-import com.grupo12.Voy.features.tags.models.TagsEntity;
+import com.grupo12.Voy.features.tags.models.TagEntity;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.persistence.*;
@@ -39,7 +39,7 @@ public class PartyEntity {
     @JoinTable(name = "etiquetas_por_evento",
             joinColumns = @JoinColumn(name = "evento_id"),
             inverseJoinColumns = @JoinColumn(name = "etiquetas_id"))
-    private Set<TagsEntity> tagsSet;
+    private Set<TagEntity> tagsSet;
 
     @Column(name = "localidad")
     private String city;
