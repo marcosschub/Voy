@@ -14,7 +14,7 @@ public interface PartyRepository extends JpaRepository<PartyEntity,Long> {
     List<PartyEntity> findByOrganizerId(Long organizerId);
     Optional <PartyEntity> findByExternalId(UUID id);
     List<PartyEntity> findByPartyAccesibility(Boolean partyAccesibility);
-    Optional<PartyEntity> findByTitle(String title);
-    List<PartyEntity> findByCity(String city);
+    Optional<PartyEntity> findByTitleAndPartyAccesibility(String title, Boolean isPublic);
+    List<PartyEntity> findByCityAndPartyAccesibility(String city, Boolean isPublic);
     List<PartyEntity> findByState(Boolean state);
 }
