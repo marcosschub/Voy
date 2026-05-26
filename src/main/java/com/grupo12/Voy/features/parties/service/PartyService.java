@@ -3,7 +3,7 @@ package com.grupo12.Voy.features.parties.service;
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
 import com.grupo12.Voy.features.parties.Dto.PartyReqDTO;
 import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
-import com.grupo12.Voy.features.parties.PartyRepository;
+import com.grupo12.Voy.features.parties.repository.PartyRepository;
 import com.grupo12.Voy.features.parties.mapper.PartyMapper;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.tags.TagsRepository;
