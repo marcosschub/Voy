@@ -2,7 +2,7 @@ package com.grupo12.Voy.features.tickets.service;
 
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
 import com.grupo12.Voy.common.exceptions.ExceededAmountException;
-import com.grupo12.Voy.features.parties.PartyRepository;
+import com.grupo12.Voy.features.parties.repository.PartyRepository;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.receipts.ReceiptRepository;
 import com.grupo12.Voy.features.tickets.TicketMapper;
