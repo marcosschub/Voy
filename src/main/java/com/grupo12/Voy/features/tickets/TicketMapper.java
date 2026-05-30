@@ -21,4 +21,6 @@ public interface TicketMapper {
     @Mapping(target = "party", ignore = true)
     @Mapping(target = "receipt", ignore = true)
     TicketEntity toEntity(TicketRequestDTO ticket);
+
+    TicketEntity toEntityFromMapper(TicketResponseDTO responseDTO);
 }
