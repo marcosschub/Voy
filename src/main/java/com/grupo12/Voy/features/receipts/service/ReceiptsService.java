@@ -1,15 +1,24 @@
 package com.grupo12.Voy.features.receipts.service;
 
+import com.grupo12.Voy.common.exceptions.ExceededAmountException;
+import com.grupo12.Voy.common.exceptions.NotAllowed;
+import com.grupo12.Voy.features.parties.models.PartyEntity;
+import com.grupo12.Voy.features.parties.service.PartyService;
 import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
 import com.grupo12.Voy.features.receipts.DTO.ReceiptRequestDTO;
 import com.grupo12.Voy.features.receipts.ReceiptRepository;
 import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.receipts.ReceiptMapper;
+import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
+import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
+import com.grupo12.Voy.features.tickets.service.TicketsService;
+import com.grupo12.Voy.features.users.Mapper.UserMapper;
+import com.grupo12.Voy.features.users.Service.UsersService;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,16 +26,23 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class ReceiptsService {
+public class ReceiptsService implements IReceiptService {
 
     private final ReceiptRepository receiptRepository;
+    private final UsersService usersService;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final ReceiptMapper receiptMapper;
+    private final TicketsService ticketsService;
+    private final PartyService partyService;
 
-    @Autowired
-    private ReceiptMapper receiptMapper;
-
-    public List<ReceiptResponseDTO> getAllDTO(){
+    public List<ReceiptResponseDTO> getAll(){
         return receiptRepository.findAll().stream().map(receiptMapper::toResponseDTO).toList();
+    }
+
+    public ReceiptResponseDTO getById(Long id){
+        return receiptMapper.toResponseDTO(receiptRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo")));
     }
 
     public ReceiptResponseDTO getByExternalId(UUID id){
@@ -38,22 +54,43 @@ public class ReceiptsService {
 
     public List<ReceiptResponseDTO> getByPaymentMethod(String method){
         return receiptRepository.findByPaymentMethod(method.toUpperCase())
-                .stream()
-                .map(receiptMapper::toResponseDTO)
+                .stream().map(receiptMapper::toResponseDTO)
                 .toList();
     }
 
+    public List<ReceiptResponseDTO> getByUser(UUID userExtId){
+        UserEntity user = userMapper.userToEntity(usersService.findByExternalId(userExtId));
+        return receiptRepository.findByUser(user)
+                .stream().map(receiptMapper::toResponseDTO).toList();
+    }
+
+    @Transactional
     public ReceiptResponseDTO createReceipt(ReceiptRequestDTO dto){
-        UserEntity user = userRepository.findByEmail(dto.getUserEmail());
+        UserEntity user = userMapper.userToEntity(userRepository.findByEmail(dto.getUser().email())
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario")));
         ReceiptEntity receipt = receiptMapper.toEntity(dto);
         receipt.setUser(user);
         return receiptMapper.toResponseDTO(receipt);
     }
 
-    public void deleteReceipt(UUID externalID){
+    @Transactional
+    public void deleteReceipt(UUID externalID, UUID userExtId){
         ReceiptEntity receipt = receiptRepository.findByExternalId(externalID)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
+        if(userExtId != receipt.getUser().getIdExternal()){
+            throw new NotAllowed("Para eliminar el recibo debes ser el usuario que lo adquirio");
+        }
         receiptRepository.delete(receipt);
+    }
+
+    @Transactional
+    public List<TicketResponseDTO> purchaseTickets(ReceiptRequestDTO receiptDTO, TicketRequestDTO ticketDTO){
+        int available = partyService.getByExternalId(ticketDTO.getPartyIdExternal()).getGuestLimit() - ticketsService.getByParty(ticketDTO.getPartyIdExternal()).size();
+        if (receiptDTO.getQuantity() > available){
+            throw new ExceededAmountException("Solo quedan "+ available + "entradas disponibles");
+        }
+        ReceiptResponseDTO receipt = createReceipt(receiptDTO);
+        return ticketsService.createTicket(ticketDTO,receipt.getQuantity());
     }
 
     /*

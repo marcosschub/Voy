@@ -12,5 +12,4 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<UserEntity,Long> {
     Optional <UserDto> findByEmail(String userEmail);
     Optional<UserDto> findByExternalId(UUID productId);
-
 }
