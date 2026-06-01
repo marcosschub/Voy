@@ -11,10 +11,10 @@ import java.util.UUID;
 @Getter
 @Setter
 public class TicketRequestDTO {
-    @NotNull
+    @NotNull (message = "Ingrese el UUID del usuario")
     private UUID userIdExternal;
-    @NotNull
+    @NotNull (message = "Ingrese el UUID de la fiesta")
     private UUID partyIdExternal;
-    @NotNull
+    @NotNull (message = "Ingrese el UUID del recibo")
     private UUID receiptExternalId;
 }

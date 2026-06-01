@@ -1,0 +1,75 @@
+package com.grupo12.Voy.features.parties.controller;
+
+import com.grupo12.Voy.features.parties.Dto.PartyReqDTO;
+import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
+import com.grupo12.Voy.features.parties.service.PartyService;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@AllArgsConstructor
+@RequestMapping("/api/parties")
+public class PartiesController {
+    private final PartyService partyService;
+
+    @GetMapping
+    public ResponseEntity<List<PartyResDTO>> findAll() {
+        return ResponseEntity.ok(partyService.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PartyResDTO> findById(@PathVariable UUID id) {
+        return ResponseEntity.ok(partyService.getByExternalId(id));
+    }
+
+    @GetMapping("/organizer/{idOrganizer}")
+    public ResponseEntity<List<PartyResDTO>> getByOrganizer(@PathVariable Long idOrganizer) {
+        return ResponseEntity.ok(partyService.getByOrganizer(idOrganizer));
+    }
+
+    /// Devuelve por titulo que sean publicos
+    @GetMapping("/title/{title}")
+    public ResponseEntity<PartyResDTO> getByTitle(@PathVariable String title) {
+        return ResponseEntity.ok(partyService.getByTitle(title.toLowerCase()));
+    }
+
+    /// Devuelve eventos publicos
+    @GetMapping("/type")
+    public ResponseEntity<List<PartyResDTO>> getByType(@RequestParam Boolean isPublic) {
+        return ResponseEntity.ok(partyService.getByType(isPublic));
+    }
+
+    /// Devuelve eventos en determinadas ciudades que sean publicos
+    @GetMapping("/city")
+    public ResponseEntity<List<PartyResDTO>> getByCity(@RequestParam String city) {
+        return ResponseEntity.ok(partyService.getByCity(city));
+    }
+
+    /// devuelve eventos activos, publicos y privados (VER!)
+    @GetMapping("/status")
+    public ResponseEntity<List<PartyResDTO>> getByStatus(@RequestParam Boolean status) {
+        return ResponseEntity.ok(partyService.getByStatus(status));
+    }
+
+    /// crea nuevo evento
+    @PostMapping
+    public ResponseEntity<PartyResDTO> create(@RequestBody PartyReqDTO party) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(partyService.create(party));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PartyResDTO> update(@PathVariable UUID id,@RequestBody PartyReqDTO party) {
+        return ResponseEntity.ok(partyService.update(id, party));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        partyService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}

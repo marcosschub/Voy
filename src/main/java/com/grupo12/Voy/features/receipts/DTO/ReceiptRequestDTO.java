@@ -1,9 +1,8 @@
 package com.grupo12.Voy.features.receipts.DTO;
 
+import com.grupo12.Voy.features.users.Dto.UserDto;
 import com.grupo12.Voy.features.users.models.UserEntity;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,12 +15,12 @@ import java.math.BigDecimal;
 
 public class ReceiptRequestDTO {
     @NotNull
-    @Positive
+    @PositiveOrZero(message = "El monto debe ser 0 o positivo")
     private BigDecimal price;
-    @NotNull
+    @NotBlank (message = "Ingrese el metodo de pago")
     private String paymentMethod;
     @NotNull
-    @Positive
+    @Positive(message = "La cantidad debe ser mayor a 0")
     private Integer quantity;
     @NotNull
     private UserDto user;

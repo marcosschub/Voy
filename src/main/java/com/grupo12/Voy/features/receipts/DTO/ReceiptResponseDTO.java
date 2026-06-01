@@ -1,6 +1,7 @@
 package com.grupo12.Voy.features.receipts.DTO;
 
 
+import com.grupo12.Voy.features.users.Dto.UserDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,5 +21,5 @@ public class ReceiptResponseDTO {
     private BigDecimal finalPrice;
     private LocalDateTime paymentDate;
     private Integer quantity;
-    private UserDTO user;
+    private UserDto user;
 }

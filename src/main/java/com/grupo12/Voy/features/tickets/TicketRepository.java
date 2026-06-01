@@ -2,6 +2,7 @@ package com.grupo12.Voy.features.tickets;
 
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
+import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
