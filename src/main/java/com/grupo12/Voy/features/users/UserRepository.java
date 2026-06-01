@@ -1,16 +1,18 @@
 package com.grupo12.Voy.features.users;
 
-import com.grupo12.Voy.features.users.Dto.UserDto;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity,Long> {
-    Optional <UserDto> findByEmail(String userEmail);
-    Optional<UserDto> findByExternalId(UUID productId);
+    Optional <UserEntity> findByEmail(String userEmail);
+    Optional<UserEntity> findByExternalId(UUID productId);
+    Boolean existsByEmail(String email);
+
 
 }

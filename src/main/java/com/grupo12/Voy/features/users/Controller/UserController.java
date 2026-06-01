@@ -3,7 +3,10 @@ package com.grupo12.Voy.features.users.Controller;
 
 import com.grupo12.Voy.features.users.Dto.NewUserDto;
 import com.grupo12.Voy.features.users.Dto.UserDto;
-import com.grupo12.Voy.features.users.Service.UsersService;
+import com.grupo12.Voy.features.users.Dto.UserFollowDto;
+import com.grupo12.Voy.features.users.Dto.UserUpdateDto;
+import com.grupo12.Voy.features.users.Service.IUsersService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +20,13 @@ import java.util.UUID;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UsersService userService;
+    private final IUsersService userService;
 
     @GetMapping
     ResponseEntity<List<UserDto>> getAll(){
         return ResponseEntity.ok(userService.getAll());
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<UserDto> findByID(@PathVariable Long id){
-        return ResponseEntity.ok(userService.findById(id));
-    }
 
     @GetMapping("/{idExternall}")
     ResponseEntity<UserDto> findbyExternalId(@PathVariable UUID idExternal){
@@ -46,13 +45,23 @@ public class UserController {
     }
 
     @PostMapping
-    ResponseEntity<NewUserDto> newUser(@RequestBody NewUserDto newUserDto){
+    ResponseEntity<NewUserDto> newUser(@RequestBody @Valid NewUserDto newUserDto){
         return new ResponseEntity<>(userService.newUser(newUserDto),HttpStatus.CREATED);
     }
 
     @PutMapping("/{idExternal}")
-    ResponseEntity<UserDto> updateUser(@PathVariable UUID userUuid,@RequestBody UserDto userDto){
-        return ResponseEntity.ok(userService.updateUser(userUuid,userDto));
+    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID userUuid,@RequestBody UserUpdateDto userUpdateDto){
+        return ResponseEntity.ok(userService.updateUser(userUuid, userUpdateDto));
+    }
+
+    @GetMapping("/{idExternal}/follows")
+    ResponseEntity<List<UserFollowDto>> listFollowList(@PathVariable UUID idExternal){
+        return ResponseEntity.ok(userService.listFollowList(idExternal));
+    }
+
+    @GetMapping("/{idExternal}/followers")
+    ResponseEntity<List<UserFollowDto>> listFollowersList(@PathVariable UUID idExternal){
+       return ResponseEntity.ok(userService.listFollowersList(idExternal));
     }
 
 
