@@ -5,7 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "etiquetas")
-@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class TagEntity {
@@ -14,6 +14,6 @@ public class TagEntity {
     @Column(name = "etiquetas_id")
     private Long tagsId;
 
-    @Column(name = "nombre", unique = true)
+    @Column(name = "nombre", unique = true, nullable = false)
     private String name;
 }

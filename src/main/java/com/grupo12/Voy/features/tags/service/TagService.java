@@ -2,6 +2,7 @@ package com.grupo12.Voy.features.tags.service;
 
 import com.grupo12.Voy.common.exceptions.EntityDuplicatedException;
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
+import com.grupo12.Voy.common.exceptions.InvalidFieldException;
 import com.grupo12.Voy.features.tags.ITagService;
 import com.grupo12.Voy.features.tags.TagsRepository;
 import com.grupo12.Voy.features.tags.dto.TagsDTO;
@@ -10,6 +11,8 @@ import com.grupo12.Voy.features.tags.models.TagEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -31,37 +34,42 @@ public class TagService implements ITagService {
 
     @Override
     public TagsDTO findByName(String name){
-        TagEntity tag = tagMapper.toEntity(tagsRepository
+        TagEntity tag = tagsRepository
                 .findByName(name.toUpperCase())
-                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada")));
+                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada"));
         return tagMapper.toDto(tag);
     }
 
     @Override
+    @Transactional
     public TagsDTO save(TagsDTO tagsDTO){
-        tagsRepository
-                .findByName(tagsDTO.getName())
-                .orElseThrow(() -> new EntityDuplicatedException("La etiqueta ya existe"));
-        tagsDTO.setName(tagsDTO.getName());
+        if(tagsRepository
+                .findAll()
+                .stream()
+                .anyMatch(tagEntity -> tagEntity
+                        .getName()
+                        .equals(tagsDTO.name().toUpperCase())))
+                throw new EntityDuplicatedException("La etiqueta ya existe");
         return tagMapper.toDto(tagsRepository
                 .save(tagMapper.toEntity(tagsDTO)));
     }
 
     @Override
+    @Transactional
     public TagsDTO update(String oldname, TagsDTO tagsDTO){
-        TagEntity tag = tagMapper
-                            .toEntity(tagsRepository.findByName(oldname)
-                            .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada")));
-        tag.setName(tagsDTO.getName());
-        tagsRepository.save(tag);
-        return tagMapper.toDto(tag);
+        TagEntity tag = tagsRepository
+                .findByName(oldname.toUpperCase())
+                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada"));
+        tag.setName(tagsDTO.name());
+        return tagMapper.toDto(tagsRepository.save(tag));
     }
 
     @Override
+    @Transactional
     public void delete(TagsDTO tagsDTO){
-        TagEntity tag = tagMapper
-                            .toEntity(tagsRepository.findByName(tagsDTO.getName().toUpperCase())
-                            .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada")));
+        TagEntity tag = tagsRepository
+                .findByName(tagsDTO.name())
+                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada"));
         tagsRepository.delete(tag);
     }
 }
