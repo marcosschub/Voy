@@ -57,10 +57,11 @@ public class TicketsController {
         return ResponseEntity.ok(ticketsService.createTicket(ticketReq,cantidad));
     }
 
-    @PatchMapping("/transferTicket")
-    public  ResponseEntity<TicketResponseDTO> transferTicket(@RequestParam @Valid UUID ticketExtId,
+    @PatchMapping("/{userId}/{ticketId}/transferTicket")
+    public  ResponseEntity<TicketResponseDTO> transferTicket(@PathVariable @Valid UUID userId,
+                                                             @PathVariable @Valid UUID ticketId,
                                                              @RequestParam @Valid UUID newUserExtId){
-        return ResponseEntity.ok(ticketsService.transferTicket(ticketExtId,newUserExtId));
+        return ResponseEntity.ok(ticketsService.transferTicket(ticketId,userId,newUserExtId));
     }
 
     @PatchMapping
