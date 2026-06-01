@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface TagsRepository extends JpaRepository<TagEntity,Long> {
-    Optional<TagsDTO> findByName(String name);
+    Optional<TagEntity> findByName(String name);
 }
