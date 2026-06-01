@@ -2,7 +2,7 @@ package com.grupo12.Voy.features.tickets.service;
 
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
 import com.grupo12.Voy.common.exceptions.ExceededAmountException;
-import com.grupo12.Voy.common.exceptions.NotAllowed;
+import com.grupo12.Voy.common.exceptions.NotAllowedException;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.parties.repository.PartyRepository;
 import com.grupo12.Voy.features.receipts.ReceiptRepository;
@@ -135,7 +135,7 @@ public class TicketsService  implements ITicketsService{
         UserEntity user = userMapper.userToEntity(userRepository.findByExternalId(newUserExtId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado")));
         if(ticket.getUser().getIdExternal() != oldUserId){
-            throw new NotAllowed("Solo el propietario del ticket puede transferirlo");
+            throw new NotAllowedException("Solo el propietario del ticket puede transferirlo");
         }
         ticket.setUser(user);
         TicketEntity ticket1 = ticketRepository.save(ticket);
@@ -147,7 +147,7 @@ public class TicketsService  implements ITicketsService{
         TicketEntity ticket = ticketRepository.findByIdExternal(externalId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el ticket"));
         if (ticket.getUser().getIdExternal() != userExtId){
-            throw new NotAllowed("Solo el usuario propietario del ticket lo puede aceptar");
+            throw new NotAllowedException("Solo el usuario propietario del ticket lo puede aceptar");
         }
         ticket.setConfirmed(true);
         TicketEntity ticket1 =  ticketRepository.save(ticket);
@@ -158,10 +158,10 @@ public class TicketsService  implements ITicketsService{
         TicketEntity ticket = ticketRepository.findByIdExternal(ticketExtId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el Ticket"));
         if (ticket.getUser().getIdExternal() != userId){
-            throw new NotAllowed("Para devolver un ticket debe ser el propietario del mismo");
+            throw new NotAllowedException("Para devolver un ticket debe ser el propietario del mismo");
         }
         if(ticket.getReceiptEntity().getFinalPrice().intValue() > 0.0){
-            throw new NotAllowed("Solo se pueden devolver los tickets gratuitos, cualquier cosa comunicarse con el creador del evento");
+            throw new NotAllowedException("Solo se pueden devolver los tickets gratuitos, cualquier cosa comunicarse con el creador del evento");
         }
         ticketRepository.delete(ticket);
     }
