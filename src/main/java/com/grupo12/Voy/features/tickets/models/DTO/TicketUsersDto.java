@@ -6,14 +6,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Builder
 @Getter
 @Setter
-public class TicketResponseDTO {
-    private UUID idExternal;
-    private UUID userExternalId;
+public class TicketUsersDto {
+    private String userName;
     private String userEmail;
     private PartyResDTO party;
     private Boolean confirmed;

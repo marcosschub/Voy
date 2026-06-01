@@ -1,8 +1,7 @@
 package com.grupo12.Voy.features.receipts.service;
 
 import com.grupo12.Voy.common.exceptions.ExceededAmountException;
-import com.grupo12.Voy.common.exceptions.NotAllowed;
-import com.grupo12.Voy.features.parties.models.PartyEntity;
+import com.grupo12.Voy.common.exceptions.NotAllowedException;
 import com.grupo12.Voy.features.parties.service.PartyService;
 import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
 import com.grupo12.Voy.features.receipts.DTO.ReceiptRequestDTO;
@@ -78,7 +77,7 @@ public class ReceiptsService implements IReceiptService {
         ReceiptEntity receipt = receiptRepository.findByExternalId(externalID)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
         if(userExtId != receipt.getUser().getIdExternal()){
-            throw new NotAllowed("Para eliminar el recibo debes ser el usuario que lo adquirio");
+            throw new NotAllowedException("Para eliminar el recibo debes ser el usuario que lo adquirio");
         }
         receiptRepository.delete(receipt);
     }
