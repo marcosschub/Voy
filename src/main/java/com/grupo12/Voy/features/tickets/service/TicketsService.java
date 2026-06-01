@@ -3,10 +3,8 @@ package com.grupo12.Voy.features.tickets.service;
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
 import com.grupo12.Voy.common.exceptions.ExceededAmountException;
 import com.grupo12.Voy.common.exceptions.NotAllowed;
-import com.grupo12.Voy.features.parties.PartyRepository;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
-import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
-import com.grupo12.Voy.features.receipts.ReceiptMapper;
+import com.grupo12.Voy.features.parties.repository.PartyRepository;
 import com.grupo12.Voy.features.receipts.ReceiptRepository;
 import com.grupo12.Voy.features.tickets.TicketMapper;
 import com.grupo12.Voy.features.tickets.TicketRepository;
@@ -14,7 +12,6 @@ import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
-import com.grupo12.Voy.features.users.Dto.UserDto;
 import com.grupo12.Voy.features.users.Mapper.UserMapper;
 import com.grupo12.Voy.features.users.Service.UsersService;
 import com.grupo12.Voy.features.users.UserRepository;
@@ -132,11 +129,14 @@ public class TicketsService  implements ITicketsService{
     }
 
     @Transactional
-    public TicketResponseDTO transferTicket(UUID externalId, UUID newUserExtID){
+    public TicketResponseDTO transferTicket(UUID externalId, UUID oldUserId, UUID newUserExtId){
         TicketEntity ticket = ticketRepository.findByIdExternal(externalId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el ticket"));
-        UserEntity user = userMapper.userToEntity(userRepository.findByExternalId(newUserExtID)
+        UserEntity user = userMapper.userToEntity(userRepository.findByExternalId(newUserExtId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado")));
+        if(ticket.getUser().getIdExternal() != oldUserId){
+            throw new NotAllowed("Solo el propietario del ticket puede transferirlo");
+        }
         ticket.setUser(user);
         TicketEntity ticket1 = ticketRepository.save(ticket);
         return ticketMapper.toResponseDto(ticket1);
@@ -159,6 +159,9 @@ public class TicketsService  implements ITicketsService{
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el Ticket"));
         if (ticket.getUser().getIdExternal() != userId){
             throw new NotAllowed("Para devolver un ticket debe ser el propietario del mismo");
+        }
+        if(ticket.getReceiptEntity().getFinalPrice().intValue() > 0.0){
+            throw new NotAllowed("Solo se pueden devolver los tickets gratuitos, cualquier cosa comunicarse con el creador del evento");
         }
         ticketRepository.delete(ticket);
     }

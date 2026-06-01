@@ -16,7 +16,7 @@ public interface ITicketsService {
     List<TicketResponseDTO> getByPartyAndUnconfirmed(UUID partyIdExt);
     List<TicketResponseDTO> getByReceipt(UUID receiptExtId);
     List<TicketResponseDTO> createTicket(TicketRequestDTO request, Integer quantity);
-    TicketResponseDTO transferTicket(UUID externalId, UUID newUserExtID);
+    TicketResponseDTO transferTicket(UUID externalId, UUID oldUserId, UUID newUserExtID);
     TicketResponseDTO acceptTicket(UUID userExtId, UUID externalId);
     void returnTicket(UUID ticketExtId, UUID userExtId);
 }
