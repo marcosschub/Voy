@@ -10,16 +10,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Builder
-@Getter
-@Setter
-
-public class ReceiptResponseDTO {
-    private UUID externalId;
-    private BigDecimal price;
-    private String paymentMethod;
-    private BigDecimal finalPrice;
-    private LocalDateTime paymentDate;
-    private Integer quantity;
-    private UserDto user;
+public record ReceiptResponseDTO (
+    UUID externalId,
+    BigDecimal price,
+    String paymentMethod,
+    BigDecimal finalPrice,
+    LocalDateTime paymentDate,
+    Integer quantity,
+    UserDto user){
 }

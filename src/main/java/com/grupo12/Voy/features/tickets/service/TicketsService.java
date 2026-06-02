@@ -106,13 +106,13 @@ public class TicketsService  implements ITicketsService{
     @Transactional
     public List<TicketResponseDTO> createTicket(TicketRequestDTO request, Integer quantity){
         UserEntity user = userMapper.userToEntity(userRepository
-                .findByExternalId(request.getUserIdExternal())
+                .findByExternalId(request.userIdExternal())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado")));
         PartyEntity party = partyRepository
-                .findByExternalId(request.getPartyIdExternal())
+                .findByExternalId(request.partyIdExternal())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra la fiesta solicitada"));
         ReceiptEntity receipt = receiptRepository
-                .findByExternalId(request.getReceiptExternalId())
+                .findByExternalId(request.receiptExternalId())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
         int available = party.getGuestLimit() - ticketRepository.findByParty(party).size();
         if (quantity > available){

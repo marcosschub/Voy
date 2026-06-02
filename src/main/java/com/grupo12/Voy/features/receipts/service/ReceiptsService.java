@@ -65,7 +65,7 @@ public class ReceiptsService implements IReceiptService {
 
     @Transactional
     public ReceiptResponseDTO createReceipt(ReceiptRequestDTO dto){
-        UserEntity user = userMapper.userToEntity(userRepository.findByEmail(dto.getUser().email())
+        UserEntity user = userMapper.userToEntity(userRepository.findByEmail(dto.user().email())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario")));
         ReceiptEntity receipt = receiptMapper.toEntity(dto);
         receipt.setUser(user);
@@ -84,12 +84,12 @@ public class ReceiptsService implements IReceiptService {
 
     @Transactional
     public List<TicketResponseDTO> purchaseTickets(ReceiptRequestDTO receiptDTO, TicketRequestDTO ticketDTO){
-        int available = partyService.getByExternalId(ticketDTO.getPartyIdExternal()).getGuestLimit() - ticketsService.getByParty(ticketDTO.getPartyIdExternal()).size();
-        if (receiptDTO.getQuantity() > available){
+        int available = partyService.getByExternalId(ticketDTO.partyIdExternal()).guestLimit() - ticketsService.getByParty(ticketDTO.partyIdExternal()).size();
+        if (receiptDTO.quantity() > available){
             throw new ExceededAmountException("Solo quedan "+ available + "entradas disponibles");
         }
         ReceiptResponseDTO receipt = createReceipt(receiptDTO);
-        return ticketsService.createTicket(ticketDTO,receipt.getQuantity());
+        return ticketsService.createTicket(ticketDTO,receipt.quantity());
     }
 
     /*
