@@ -3,7 +3,8 @@ package com.grupo12.Voy.features.parties.controller;
 import com.grupo12.Voy.features.parties.Dto.PartyReqDTO;
 import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
 import com.grupo12.Voy.features.parties.service.PartyService;
-import lombok.AllArgsConstructor;
+import com.grupo12.Voy.features.parties.service.IPartyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +13,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api/parties")
-public class PartiesController {
-    private final PartyService partyService;
+public class PartiesController  {
+
+    private final IPartyService partyService;
 
     @GetMapping
     public ResponseEntity<List<PartyResDTO>> findAll() {
