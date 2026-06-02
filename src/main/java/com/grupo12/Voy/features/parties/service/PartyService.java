@@ -10,7 +10,7 @@ import com.grupo12.Voy.features.tags.TagsRepository;
 import com.grupo12.Voy.features.tags.models.TagEntity;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -19,29 +19,33 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
-public class PartyService {
+@RequiredArgsConstructor
+public class PartyService implements IPartyService {
 
     private final PartyRepository partyRepository;
     private final UserRepository userRepository;
     private final PartyMapper partyMapper;
     private final TagsRepository tagsRepository;
 
+    @Override
     public List<PartyResDTO> getAll() {
         return partyMapper.toResDTOList(partyRepository.findAll());
     }
 
+    @Override
     public PartyResDTO getByExternalId(UUID id) {
         return partyRepository.findByExternalId(id)
                 .map(partyMapper::toResDTO)
                 .orElseThrow(()-> new EntityNotFoundException("Evento no encontrado"));
     }
      ///quizas no es necesario///
-    public PartyResDTO getById(Long id) {
+     @Override
+     public PartyResDTO getById(Long id) {
         return partyMapper.toResDTO(partyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado")));
     }
 
+    @Override
     public List<PartyResDTO> getByOrganizer(Long organizerId) {
         List<PartyEntity> parties = partyRepository.findByOrganizerId(organizerId);
         if (parties.isEmpty()) {
@@ -50,16 +54,19 @@ public class PartyService {
         return partyMapper.toResDTOList(parties);
     }
 
+    @Override
     public PartyResDTO getByTitle(String title) {
         return partyMapper.toResDTO(partyRepository.findByTitleAndPartyAccesibility(title.toUpperCase(),true)
                 .orElseThrow(() -> new EntityNotFoundException("Titulo no encontrado")));
     }
 
+    @Override
     public List<PartyResDTO> getByType(Boolean isPublic) {
         return partyMapper.toResDTOList(partyRepository.findByPartyAccesibility(isPublic));
     }
 
     ///devuelve solo en el caso de ser publico el evento
+    @Override
     public List<PartyResDTO> getByCity(String city) {
         List<PartyEntity> parties = partyRepository.findByCityAndPartyAccesibility(city,true);
         if (parties.isEmpty()) {
@@ -68,6 +75,7 @@ public class PartyService {
         return partyMapper.toResDTOList(parties);
     }
 
+    @Override
     public List<PartyResDTO> getByStatus(Boolean status) {
         List<PartyEntity> parties = partyRepository.findByState(status);
         if (parties.isEmpty()) {
@@ -76,6 +84,7 @@ public class PartyService {
         return partyMapper.toResDTOList(parties);
     }
 
+    @Override
     public PartyResDTO create(PartyReqDTO dto) {
         UserEntity organizer = userRepository.findById(dto.getIdOrganizer())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer no encontrado"));
@@ -88,6 +97,7 @@ public class PartyService {
 
         return partyMapper.toResDTO(partyRepository.save(party));
     }
+    @Override
     public PartyResDTO update(UUID idExternal, PartyReqDTO dto) {
         PartyEntity party = partyRepository.findByExternalId(idExternal)
                         .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
@@ -107,7 +117,8 @@ public class PartyService {
     }
 
     ///no elimina de la DB solo cambia el estadoLogico
-    public void delete (UUID idExternal){
+    @Override
+    public void delete(UUID idExternal){
         PartyEntity party = partyRepository.findByExternalId(idExternal)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
         party.setLogicState(Boolean.FALSE);
