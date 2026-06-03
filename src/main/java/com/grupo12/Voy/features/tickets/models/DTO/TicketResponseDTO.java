@@ -8,14 +8,11 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Builder
-@Getter
-@Setter
-public class TicketResponseDTO {
-    private UUID idExternal;
-    private UUID userExternalId;
-    private String userEmail;
-    private PartyResDTO party;
-    private Boolean confirmed;
-    private ReceiptResponseDTO receipt;
+public record TicketResponseDTO (
+    UUID idExternal,
+    UUID userExternalId,
+    String userEmail,
+    PartyResDTO party,
+    Boolean confirmed,
+    ReceiptResponseDTO receipt){
 }

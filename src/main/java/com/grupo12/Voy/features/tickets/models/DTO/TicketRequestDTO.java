@@ -7,14 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.UUID;
 
-@Builder
-@Getter
-@Setter
-public class TicketRequestDTO {
+public record TicketRequestDTO (
     @NotNull (message = "Ingrese el UUID del usuario")
-    private UUID userIdExternal;
+    UUID userIdExternal,
     @NotNull (message = "Ingrese el UUID de la fiesta")
-    private UUID partyIdExternal;
+    UUID partyIdExternal,
     @NotNull (message = "Ingrese el UUID del recibo")
-    private UUID receiptExternalId;
+    UUID receiptExternalId){
 }

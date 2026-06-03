@@ -9,19 +9,15 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Builder
-@Getter
-@Setter
-
-public class ReceiptRequestDTO {
+public record ReceiptRequestDTO (
     @NotNull
     @PositiveOrZero(message = "El monto debe ser 0 o positivo")
-    private BigDecimal price;
+    BigDecimal price,
     @NotBlank (message = "Ingrese el metodo de pago")
-    private String paymentMethod;
+    String paymentMethod,
     @NotNull
     @Positive(message = "La cantidad debe ser mayor a 0")
-    private Integer quantity;
+    Integer quantity,
     @NotNull
-    private UserDto user;
+    UserDto user){
 }
