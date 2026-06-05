@@ -1,14 +1,15 @@
 package com.grupo12.Voy.features.users.models;
 
 import com.grupo12.Voy.features.parties.models.PartyEntity;
+import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import com.grupo12.Voy.features.users.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,26 +27,22 @@ public class UserEntity {
 
     private UUID idExternal;
 
-    @NotNull
     private String userName;
 
-    @NotNull
     @Column(unique = true)
     private String email;
 
-    @NotNull
     private String password;
 
     @ColumnDefault("false")
     private Boolean accesibilityUser;
 
-    @NotNull
     @Column(name = "fecha_nacimiento")
     private Date birthDate;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "roles_usuario", joinColumns = @JoinColumn(name = "roles"))
-    private Set<Role> role;
+    private List<Role> role;
 
     @ManyToMany
     @JoinTable(
@@ -53,10 +50,10 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_seguido")
     )
-    private Set<UserEntity> followsSet;
+    private Set<UserEntity> followsList;
 
     @ManyToMany(mappedBy = "followsSet")
-    private Set<UserEntity> followersSet;
+    private List<UserEntity> followersList;
 
     @ManyToMany
     @JoinTable(
@@ -64,7 +61,7 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_evento")
     )
-    private Set<PartyEntity> followedParties;
+    private List<PartyEntity> followedParties;
 
 
     @ManyToMany
@@ -73,10 +70,13 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_eventos")
     )
-    private Set<PartyEntity> myParties;
+    private List<PartyEntity> myParties;
 
-    @OneToMany
-    private Set<TicketEntity> myTickets;
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<TicketEntity> myTickets;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<ReceiptEntity> myRecipts;
 
     @PrePersist
     public void onSave(){

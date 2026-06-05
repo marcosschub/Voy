@@ -1,4 +1,7 @@
 package com.grupo12.Voy.features.users.Dto;
 
-public record NewUserDto (String email, String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record NewUserDto (@NotBlank String email,
+                          @NotBlank String password) {
 }
