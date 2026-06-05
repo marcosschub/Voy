@@ -1,5 +1,6 @@
 package com.grupo12.Voy.features.users.Service;
 
+import com.grupo12.Voy.features.parties.Dto.PartyUsersDto;
 import com.grupo12.Voy.features.users.Dto.NewUserDto;
 import com.grupo12.Voy.features.users.Dto.UserDto;
 import com.grupo12.Voy.features.users.Dto.UserFollowDto;
@@ -17,4 +18,6 @@ public interface IUsersService {
     UserUpdateDto updateUser(UUID userUuid, UserUpdateDto userUpdateDto);
     List<UserFollowDto> listFollowList(UUID userUuid);
     List<UserFollowDto> listFollowersList(UUID userUuid);
+    List<PartyUsersDto> listMyParties(UUID userId);
+    List<PartyUsersDto> listFollowedParties(UUID userUuid);
 }

@@ -1,10 +1,10 @@
 package com.grupo12.Voy.features.users.models;
 
 import com.grupo12.Voy.features.parties.models.PartyEntity;
+import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import com.grupo12.Voy.features.users.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -27,20 +27,16 @@ public class UserEntity {
 
     private UUID idExternal;
 
-    @NotNull
     private String userName;
 
-    @NotNull
     @Column(unique = true)
     private String email;
 
-    @NotNull
     private String password;
 
     @ColumnDefault("false")
     private Boolean accesibilityUser;
 
-    @NotNull
     @Column(name = "fecha_nacimiento")
     private Date birthDate;
 
@@ -76,8 +72,11 @@ public class UserEntity {
     )
     private List<PartyEntity> myParties;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     private List<TicketEntity> myTickets;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<ReceiptEntity> myRecipts;
 
     @PrePersist
     public void onSave(){

@@ -1,6 +1,7 @@
 package com.grupo12.Voy.features.users.Controller;
 
 
+import com.grupo12.Voy.features.parties.Dto.PartyUsersDto;
 import com.grupo12.Voy.features.users.Dto.NewUserDto;
 import com.grupo12.Voy.features.users.Dto.UserDto;
 import com.grupo12.Voy.features.users.Dto.UserFollowDto;
@@ -38,6 +39,26 @@ public class UserController {
         return ResponseEntity.ok(userService.findByEmail(email));
     }
 
+    @GetMapping("/{idExternal}/follows")
+    ResponseEntity<List<UserFollowDto>> listFollowList(@PathVariable UUID idExternal){
+        return ResponseEntity.ok(userService.listFollowList(idExternal));
+    }
+
+    @GetMapping("/{idExternal}/followers")
+    ResponseEntity<List<UserFollowDto>> listFollowersList(@PathVariable UUID idExternal){
+       return ResponseEntity.ok(userService.listFollowersList(idExternal));
+    }
+
+    @GetMapping("/{idExternal}/MyParties")
+    ResponseEntity<List<PartyUsersDto>> liistMyParties(@PathVariable UUID idExternal){
+        return ResponseEntity.ok(userService.listMyParties(idExternal));
+    }
+
+    @GetMapping("/{idExternal}/followparties")
+    ResponseEntity<List<PartyUsersDto>> listFollowedParties(@PathVariable UUID idExternal){
+        return ResponseEntity.ok((userService.listFollowedParties(idExternal)));
+    }
+
     @DeleteMapping("/{id}")
     ResponseEntity<Void> deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
@@ -52,16 +73,6 @@ public class UserController {
     @PutMapping("/{idExternal}")
     ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID userUuid,@RequestBody UserUpdateDto userUpdateDto){
         return ResponseEntity.ok(userService.updateUser(userUuid, userUpdateDto));
-    }
-
-    @GetMapping("/{idExternal}/follows")
-    ResponseEntity<List<UserFollowDto>> listFollowList(@PathVariable UUID idExternal){
-        return ResponseEntity.ok(userService.listFollowList(idExternal));
-    }
-
-    @GetMapping("/{idExternal}/followers")
-    ResponseEntity<List<UserFollowDto>> listFollowersList(@PathVariable UUID idExternal){
-       return ResponseEntity.ok(userService.listFollowersList(idExternal));
     }
 
 
