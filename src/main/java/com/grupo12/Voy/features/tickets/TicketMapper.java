@@ -11,25 +11,21 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "string", uses = {PartyMapper.class,ReceiptMapper.class})
 public interface TicketMapper {
-    @Mapping(target = "userIdExternal", source = "user.idExternal")
+    @Mapping(target = "userExternalId", source = "user.idExternal")
     @Mapping(target = "userEmail", source = "user.email")
     @Mapping(target = "receipt", source = "receiptEntity")
-    @Mapping(target = "party", source = "partyEntity")
+    @Mapping(target = "party", source = "party")
     TicketResponseDTO toResponseDto(TicketEntity ticket);
 
     @Mapping(target = "userName", source = "user.userName")
     @Mapping(target = "userEmail", source = "user.email")
     @Mapping(target = "receipt", source = "receiptEntity")
-    @Mapping(target = "party", source = "partyEntity")
+    @Mapping(target = "party", source = "party")
     TicketUsersDto toUsersDto(TicketEntity ticket);
 
-    @Mapping(target = "idTicket", ignore = true)
-    @Mapping(target = "idExternal", ignore = true)
-    @Mapping(target = "confirmed", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "party", ignore = true)
-    @Mapping(target = "receipt", ignore = true)
+    @Mapping(target = "user.idExternal", source = "userIdExternal")
+    @Mapping(target = "party.idExternal", source = "partyIdExternal")
+    @Mapping(target = "receiptEntity.externalId", source = "receiptExternalId")
     TicketEntity toEntity(TicketRequestDTO ticket);
 
-    TicketEntity toEntityFromMapper(TicketResponseDTO responseDTO);
 }
