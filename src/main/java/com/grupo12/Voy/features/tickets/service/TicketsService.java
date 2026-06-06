@@ -99,7 +99,7 @@ public class TicketsService  implements ITicketsService{
     public List<TicketResponseDTO> getByReceipt(UUID receiptExtId){
         ReceiptEntity receipt = receiptRepository.findByExternalId(receiptExtId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
-        return ticketRepository.findByReceipt(receipt).stream()
+        return ticketRepository.findByReceiptEntity(receipt).stream()
                 .map(ticketMapper::toResponseDto).toList();
     }
 
@@ -124,7 +124,7 @@ public class TicketsService  implements ITicketsService{
                 ticketRepository.save(ticket);
             }
         }
-        return ticketRepository.findByReceipt(receipt).stream()
+        return ticketRepository.findByReceiptEntity(receipt).stream()
                 .map(ticketMapper::toResponseDto).toList();
     }
 

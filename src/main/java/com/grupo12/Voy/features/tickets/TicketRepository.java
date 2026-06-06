@@ -16,7 +16,7 @@ import java.util.UUID;
 public interface TicketRepository extends JpaRepository<TicketEntity,Long> {
     Optional<TicketEntity> findByIdExternal(UUID id);
     List<TicketEntity> findByUser(UserEntity user);
-    List<TicketEntity> findByReceipt(ReceiptEntity receipt);
+    List<TicketEntity> findByReceiptEntity(ReceiptEntity receipt);
     List<TicketEntity> findByParty(PartyEntity party);
     List<TicketEntity> findByUserAndParty(UserEntity user,PartyEntity party);
 }
