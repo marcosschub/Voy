@@ -5,6 +5,7 @@ import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
 import com.grupo12.Voy.features.parties.Dto.PartyUsersDto;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.tags.models.TagEntity;
+import com.grupo12.Voy.features.users.Mapper.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = UserMapper.class)
 public interface PartyMapper {
     @Mapping(source = "organizer.email", target = "organizerName")
     @Mapping(source = "tagsSet", target="tags")
@@ -30,10 +31,7 @@ public interface PartyMapper {
     PartyEntity toEntity(PartyReqDTO partyReqDTO);
 
 
-    PartyEntity toEntityFromUser(PartyUsersDto dto);
-
-    @Mapping(source = "organizer.userName", target="organizer")
-    PartyUsersDto toUserFromEntity(PartyEntity partie);
+    PartyUsersDto toUserFromEntity(PartyEntity party);
 
 
     default Set<String> tagsToStrings(Set<TagEntity> tags ){
