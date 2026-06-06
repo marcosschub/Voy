@@ -56,8 +56,8 @@ public class TicketsService  implements ITicketsService{
     }
 
     public List<TicketResponseDTO> getByUserEmail(String email){
-        UserEntity user = userMapper.userToEntity(userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario")));
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario"));
         return ticketRepository.findByUser(user).stream()
                 .map(ticketMapper::toResponseDto).toList();
     }
@@ -70,8 +70,8 @@ public class TicketsService  implements ITicketsService{
     }
 
     public List<TicketResponseDTO> getByUserAndParty(UUID userId,UUID partyId){
-        UserEntity user = userMapper.userToEntity(userRepository.findByExternalId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario")));
+        UserEntity user = userRepository.findByExternalId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario"));
         PartyEntity party = partyRepository.findByExternalId(partyId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra la fiesta"));
         return ticketRepository.findByUserAndParty(user,party).stream()
@@ -99,15 +99,15 @@ public class TicketsService  implements ITicketsService{
     public List<TicketResponseDTO> getByReceipt(UUID receiptExtId){
         ReceiptEntity receipt = receiptRepository.findByExternalId(receiptExtId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
-        return ticketRepository.findByReceipt(receipt).stream()
+        return ticketRepository.findByReceiptEntity(receipt).stream()
                 .map(ticketMapper::toResponseDto).toList();
     }
 
     @Transactional
     public List<TicketResponseDTO> createTicket(TicketRequestDTO request, Integer quantity){
-        UserEntity user = userMapper.userToEntity(userRepository
+        UserEntity user = userRepository
                 .findByExternalId(request.userIdExternal())
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado")));
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado"));
         PartyEntity party = partyRepository
                 .findByExternalId(request.partyIdExternal())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra la fiesta solicitada"));
@@ -120,11 +120,11 @@ public class TicketsService  implements ITicketsService{
         }
         else{
             for(int i = 0; i < quantity; i++){
-                TicketEntity ticket = new TicketEntity(user,party,receipt);
+                TicketEntity ticket = ticketMapper.toEntity(request);
                 ticketRepository.save(ticket);
             }
         }
-        return ticketRepository.findByReceipt(receipt).stream()
+        return ticketRepository.findByReceiptEntity(receipt).stream()
                 .map(ticketMapper::toResponseDto).toList();
     }
 
@@ -132,9 +132,9 @@ public class TicketsService  implements ITicketsService{
     public TicketResponseDTO transferTicket(UUID externalId, UUID oldUserId, UUID newUserExtId){
         TicketEntity ticket = ticketRepository.findByIdExternal(externalId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el ticket"));
-        UserEntity user = userMapper.userToEntity(userRepository.findByExternalId(newUserExtId)
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado")));
-        if(ticket.getUser().getIdExternal() != oldUserId){
+        UserEntity user = userRepository.findByExternalId(newUserExtId)
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado"));
+        if(ticket.getUser().getExternalId() != oldUserId){
             throw new NotAllowedException("Solo el propietario del ticket puede transferirlo");
         }
         ticket.setUser(user);
@@ -146,7 +146,7 @@ public class TicketsService  implements ITicketsService{
     public TicketResponseDTO acceptTicket(UUID userExtId, UUID externalId){
         TicketEntity ticket = ticketRepository.findByIdExternal(externalId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el ticket"));
-        if (ticket.getUser().getIdExternal() != userExtId){
+        if (ticket.getUser().getExternalId() != userExtId){
             throw new NotAllowedException("Solo el usuario propietario del ticket lo puede aceptar");
         }
         ticket.setConfirmed(true);
@@ -157,7 +157,7 @@ public class TicketsService  implements ITicketsService{
     public void returnTicket(UUID ticketExtId, UUID userId){
         TicketEntity ticket = ticketRepository.findByIdExternal(ticketExtId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el Ticket"));
-        if (ticket.getUser().getIdExternal() != userId){
+        if (ticket.getUser().getExternalId() != userId){
             throw new NotAllowedException("Para devolver un ticket debe ser el propietario del mismo");
         }
         if(ticket.getReceiptEntity().getFinalPrice().intValue() > 0.0){

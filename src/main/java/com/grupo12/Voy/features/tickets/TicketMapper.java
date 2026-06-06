@@ -9,9 +9,9 @@ import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "string", uses = {PartyMapper.class,ReceiptMapper.class})
+@Mapper(componentModel = "spring", uses = {PartyMapper.class,ReceiptMapper.class})
 public interface TicketMapper {
-    @Mapping(target = "userExternalId", source = "user.idExternal")
+    @Mapping(target = "userExternalId", source = "user.externalId")
     @Mapping(target = "userEmail", source = "user.email")
     @Mapping(target = "receipt", source = "receiptEntity")
     @Mapping(target = "party", source = "party")
@@ -23,8 +23,8 @@ public interface TicketMapper {
     @Mapping(target = "party", source = "party")
     TicketUsersDto toUsersDto(TicketEntity ticket);
 
-    @Mapping(target = "user.idExternal", source = "userIdExternal")
-    @Mapping(target = "party.idExternal", source = "partyIdExternal")
+    @Mapping(target = "user.externalId", source = "userIdExternal")
+    @Mapping(target = "party.externalId", source = "partyIdExternal")
     @Mapping(target = "receiptEntity.externalId", source = "receiptExternalId")
     TicketEntity toEntity(TicketRequestDTO ticket);
 

@@ -65,8 +65,9 @@ public class ReceiptsService implements IReceiptService {
 
     @Transactional
     public ReceiptResponseDTO createReceipt(ReceiptRequestDTO dto){
-        UserEntity user = userMapper.userToEntity(userRepository.findByEmail(dto.user().email())
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario")));
+        UserEntity user = userRepository
+                .findByEmail(dto.user().email())
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario"));
         ReceiptEntity receipt = receiptMapper.toEntity(dto);
         receipt.setUser(user);
         return receiptMapper.toResponseDTO(receipt);
@@ -74,9 +75,10 @@ public class ReceiptsService implements IReceiptService {
 
     @Transactional
     public void deleteReceipt(UUID externalID, UUID userExtId){
-        ReceiptEntity receipt = receiptRepository.findByExternalId(externalID)
+        ReceiptEntity receipt = receiptRepository
+                .findByExternalId(externalID)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
-        if(userExtId != receipt.getUser().getIdExternal()){
+        if(userExtId != receipt.getUser().getExternalId()){
             throw new NotAllowedException("Para eliminar el recibo debes ser el usuario que lo adquirio");
         }
         receiptRepository.delete(receipt);

@@ -27,7 +27,7 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
-public class UsersService {
+public class UsersService implements IUsersService{
     private UserRepository userRepository;
     private UserMapper userMapper;
     private NewUserDtoMapper newUserDtoMapper;

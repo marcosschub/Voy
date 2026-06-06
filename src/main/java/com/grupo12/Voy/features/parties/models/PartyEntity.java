@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 @Getter
 @Setter
@@ -21,7 +21,7 @@ public class PartyEntity {
     @Column(name = "id_evento")
     private Long idParty;
 
-    private UUID idExternal;
+    private UUID externalId;
 
     @ManyToOne
     @JoinColumn(name = "id_organizador", nullable = false)
@@ -38,7 +38,7 @@ public class PartyEntity {
     @JoinTable(name = "etiquetas_por_evento",
             joinColumns = @JoinColumn(name = "evento_id"),
             inverseJoinColumns = @JoinColumn(name = "etiquetas_id"))
-    private Set<TagEntity> tagsSet;
+    private List<TagEntity> tagsList;
 
     @Column(name = "localidad")
     private String city;
@@ -53,13 +53,13 @@ public class PartyEntity {
     private Integer guestLimit;
 
     @OneToMany
-    private Set<TicketEntity> ticketsParty;
+    private List<TicketEntity> ticketsParty;
 
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String description;
 
-    @ManyToMany(mappedBy = "partiesSet")
-    private Set<UserEntity> usersSet;
+    @ManyToMany(mappedBy = "myParties")
+    private List<UserEntity> usersList;
 
     private LocalDateTime dateTime;
 
