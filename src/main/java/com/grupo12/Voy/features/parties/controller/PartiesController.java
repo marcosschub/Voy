@@ -4,7 +4,10 @@ import com.grupo12.Voy.features.parties.Dto.PartyReqDTO;
 import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
 import com.grupo12.Voy.features.parties.service.PartyService;
 import com.grupo12.Voy.features.parties.service.IPartyService;
+import com.grupo12.Voy.features.tags.dto.TagsDTO;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,13 +63,24 @@ public class PartiesController  {
 
     /// crea nuevo evento
     @PostMapping
-    public ResponseEntity<PartyResDTO> create(@RequestBody PartyReqDTO party) {
+    public ResponseEntity<PartyResDTO> create(@RequestBody @Valid PartyReqDTO party) {
         return ResponseEntity.status(HttpStatus.CREATED).body(partyService.create(party));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PartyResDTO> update(@PathVariable UUID id,@RequestBody PartyReqDTO party) {
+    public ResponseEntity<PartyResDTO> update(@PathVariable UUID id,@RequestBody @Valid PartyReqDTO party) {
         return ResponseEntity.ok(partyService.update(id, party));
+    }
+
+    @PostMapping("/{id}/tag")
+    public ResponseEntity<PartyResDTO> addTag(@PathVariable UUID id, @RequestBody @Valid TagsDTO tagsDTO){
+        return ResponseEntity.ok(partyService.addTag(id,tagsDTO));
+    }
+
+    @DeleteMapping("/{id}/tag")
+    public ResponseEntity<Void> removeTag(@PathVariable UUID id, @RequestBody @Valid TagsDTO tagsDTO){
+        partyService.removeTag(id,tagsDTO);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
