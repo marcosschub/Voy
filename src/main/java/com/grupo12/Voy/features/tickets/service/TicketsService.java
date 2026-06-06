@@ -56,8 +56,8 @@ public class TicketsService  implements ITicketsService{
     }
 
     public List<TicketResponseDTO> getByUserEmail(String email){
-        UserEntity user = userMapper.userToEntity(userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario")));
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario"));
         return ticketRepository.findByUser(user).stream()
                 .map(ticketMapper::toResponseDto).toList();
     }
@@ -70,8 +70,8 @@ public class TicketsService  implements ITicketsService{
     }
 
     public List<TicketResponseDTO> getByUserAndParty(UUID userId,UUID partyId){
-        UserEntity user = userMapper.userToEntity(userRepository.findByExternalId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario")));
+        UserEntity user = userRepository.findByExternalId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario"));
         PartyEntity party = partyRepository.findByExternalId(partyId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra la fiesta"));
         return ticketRepository.findByUserAndParty(user,party).stream()
@@ -105,9 +105,9 @@ public class TicketsService  implements ITicketsService{
 
     @Transactional
     public List<TicketResponseDTO> createTicket(TicketRequestDTO request, Integer quantity){
-        UserEntity user = userMapper.userToEntity(userRepository
+        UserEntity user = userRepository
                 .findByExternalId(request.userIdExternal())
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado")));
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado"));
         PartyEntity party = partyRepository
                 .findByExternalId(request.partyIdExternal())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra la fiesta solicitada"));
@@ -120,7 +120,8 @@ public class TicketsService  implements ITicketsService{
         }
         else{
             for(int i = 0; i < quantity; i++){
-                TicketEntity ticket = new TicketEntity(user,party,receipt);
+                TicketEntity ticket = ticketMapper.toEntity(request);
+                //TicketEntity ticket = new TicketEntity(user,party,receipt);
                 ticketRepository.save(ticket);
             }
         }
@@ -132,8 +133,8 @@ public class TicketsService  implements ITicketsService{
     public TicketResponseDTO transferTicket(UUID externalId, UUID oldUserId, UUID newUserExtId){
         TicketEntity ticket = ticketRepository.findByIdExternal(externalId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el ticket"));
-        UserEntity user = userMapper.userToEntity(userRepository.findByExternalId(newUserExtId)
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado")));
+        UserEntity user = userRepository.findByExternalId(newUserExtId)
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado"));
         if(ticket.getUser().getIdExternal() != oldUserId){
             throw new NotAllowedException("Solo el propietario del ticket puede transferirlo");
         }
