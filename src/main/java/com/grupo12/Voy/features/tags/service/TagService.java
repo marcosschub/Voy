@@ -48,7 +48,7 @@ public class TagService implements ITagService {
                 .stream()
                 .anyMatch(tagEntity -> tagEntity
                         .getName()
-                        .equals(tagsDTO.name().toUpperCase())))
+                        .equals(tagsDTO.name())))
                 throw new EntityDuplicatedException("La etiqueta ya existe");
         return tagMapper.toDto(tagsRepository
                 .save(tagMapper.toEntity(tagsDTO)));
@@ -58,7 +58,7 @@ public class TagService implements ITagService {
     @Transactional
     public TagsDTO update(String oldname, TagsDTO tagsDTO){
         TagEntity tag = tagsRepository
-                .findByName(oldname.toUpperCase())
+                .findByName(oldname)
                 .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada"));
         tag.setName(tagsDTO.name());
         return tagMapper.toDto(tagsRepository.save(tag));
