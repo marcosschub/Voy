@@ -10,7 +10,6 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -50,9 +49,9 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_seguido")
     )
-    private Set<UserEntity> followsList;
+    private List<UserEntity> followsList;
 
-    @ManyToMany(mappedBy = "followsSet")
+    @ManyToMany(mappedBy = "followsList")
     private List<UserEntity> followersList;
 
     @ManyToMany

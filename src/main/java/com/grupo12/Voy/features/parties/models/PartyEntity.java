@@ -58,7 +58,7 @@ public class PartyEntity {
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String description;
 
-    @ManyToMany(mappedBy = "partiesSet")
+    @ManyToMany(mappedBy = "myParties")
     private List<UserEntity> usersList;
 
     private LocalDateTime dateTime;
