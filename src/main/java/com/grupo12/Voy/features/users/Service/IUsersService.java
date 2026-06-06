@@ -14,7 +14,7 @@ public interface IUsersService {
     List<UserDto> getAll();
     UserDto findByEmail(String userEmail);
     void deleteUser(Long userId);
-    NewUserDto newUser(NewUserDto newUserDto);
+    UserDto newUser(NewUserDto newUserDto);
     UserUpdateDto updateUser(UUID userUuid, UserUpdateDto userUpdateDto);
     List<UserFollowDto> listFollowList(UUID userUuid);
     List<UserFollowDto> listFollowersList(UUID userUuid);

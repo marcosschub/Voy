@@ -56,13 +56,12 @@ public class UsersService implements IUsersService{
                 .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado")));
     }
 
-    public NewUserDto newUser(NewUserDto newUserDto){
+    public UserDto newUser(NewUserDto newUserDto){
        UserEntity user = newUserDtoMapper.newUserToEntity(newUserDto);
         if(userRepository.existsByEmail(newUserDto.email())){
             throw new EntityDuplicatedException("Usuario duplicado");
         }
-        userRepository.save(user);
-        return newUserDto;
+        return userMapper.userToDto(userRepository.save(user));
     }
 
     @Transactional
