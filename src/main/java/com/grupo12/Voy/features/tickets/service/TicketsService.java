@@ -121,7 +121,6 @@ public class TicketsService  implements ITicketsService{
         else{
             for(int i = 0; i < quantity; i++){
                 TicketEntity ticket = ticketMapper.toEntity(request);
-                //TicketEntity ticket = new TicketEntity(user,party,receipt);
                 ticketRepository.save(ticket);
             }
         }
@@ -135,7 +134,7 @@ public class TicketsService  implements ITicketsService{
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el ticket"));
         UserEntity user = userRepository.findByExternalId(newUserExtId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado"));
-        if(ticket.getUser().getIdExternal() != oldUserId){
+        if(ticket.getUser().getExternalId() != oldUserId){
             throw new NotAllowedException("Solo el propietario del ticket puede transferirlo");
         }
         ticket.setUser(user);
@@ -147,7 +146,7 @@ public class TicketsService  implements ITicketsService{
     public TicketResponseDTO acceptTicket(UUID userExtId, UUID externalId){
         TicketEntity ticket = ticketRepository.findByIdExternal(externalId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el ticket"));
-        if (ticket.getUser().getIdExternal() != userExtId){
+        if (ticket.getUser().getExternalId() != userExtId){
             throw new NotAllowedException("Solo el usuario propietario del ticket lo puede aceptar");
         }
         ticket.setConfirmed(true);
@@ -158,7 +157,7 @@ public class TicketsService  implements ITicketsService{
     public void returnTicket(UUID ticketExtId, UUID userId){
         TicketEntity ticket = ticketRepository.findByIdExternal(ticketExtId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el Ticket"));
-        if (ticket.getUser().getIdExternal() != userId){
+        if (ticket.getUser().getExternalId() != userId){
             throw new NotAllowedException("Para devolver un ticket debe ser el propietario del mismo");
         }
         if(ticket.getReceiptEntity().getFinalPrice().intValue() > 0.0){

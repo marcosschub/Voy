@@ -84,7 +84,7 @@ public class PartyService implements IPartyService {
                 .orElseThrow(() -> new EntityNotFoundException("Organizer no encontrado"));
         PartyEntity party = partyMapper.toEntity(dto);
         party.setOrganizer(organizer);
-        party.setIdExternal(UUID.randomUUID());
+        party.setExternalId(UUID.randomUUID());
 
         return partyMapper.toResDTO(partyRepository.save(party));
     }
@@ -102,7 +102,7 @@ public class PartyService implements IPartyService {
     }
 
     @Override
-    public PartyResDTO removeTag(UUID id,TagsDTO nameTag){
+    public void removeTag(UUID id,TagsDTO nameTag){
         PartyEntity party = partyRepository
                 .findByExternalId(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
@@ -110,7 +110,7 @@ public class PartyService implements IPartyService {
             throw new EntityInactiveException("El evento se encuentra dado de baja");
         if(party.getTagsList().remove(tagMapper.toEntity(nameTag)))
             throw new EntityNotFoundException("No se encuentra esa etiqueta en el evento");
-        return partyMapper.toResDTO(party);
+        party.getTagsList().remove(tagMapper.toEntity(nameTag));
     }
 
     @Override

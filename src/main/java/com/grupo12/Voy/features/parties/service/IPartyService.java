@@ -28,7 +28,7 @@ public interface IPartyService {
 
     PartyResDTO addTag(UUID id, TagsDTO nameTag);
 
-    PartyResDTO removeTag(UUID id, TagsDTO nameTag);
+    void removeTag(UUID id, TagsDTO nameTag);
 
     void delete(UUID idExternal);
 }

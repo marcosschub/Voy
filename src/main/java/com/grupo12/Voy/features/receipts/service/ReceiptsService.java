@@ -78,7 +78,7 @@ public class ReceiptsService implements IReceiptService {
         ReceiptEntity receipt = receiptRepository
                 .findByExternalId(externalID)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
-        if(userExtId != receipt.getUser().getIdExternal()){
+        if(userExtId != receipt.getUser().getExternalId()){
             throw new NotAllowedException("Para eliminar el recibo debes ser el usuario que lo adquirio");
         }
         receiptRepository.delete(receipt);

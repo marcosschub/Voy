@@ -21,7 +21,7 @@ public class PartyEntity {
     @Column(name = "id_evento")
     private Long idParty;
 
-    private UUID idExternal;
+    private UUID externalId;
 
     @ManyToOne
     @JoinColumn(name = "id_organizador", nullable = false)

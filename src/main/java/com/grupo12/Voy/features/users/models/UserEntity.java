@@ -24,7 +24,7 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private UUID idExternal;
+    private UUID externalId;
 
     private String userName;
 
@@ -79,8 +79,8 @@ public class UserEntity {
 
     @PrePersist
     public void onSave(){
-        if(idExternal==null) {
-            idExternal = UUID.randomUUID();
+        if(externalId==null) {
+            externalId = UUID.randomUUID();
         }
     }
 }
