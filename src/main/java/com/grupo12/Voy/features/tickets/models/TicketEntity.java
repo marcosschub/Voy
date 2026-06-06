@@ -6,6 +6,7 @@ import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -14,6 +15,8 @@ import java.util.UUID;
 @Table(name = "entradas")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TicketEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +39,13 @@ public class TicketEntity {
     @JoinColumn(name = "id_factura", nullable = false)
     private ReceiptEntity receiptEntity;
 
-    public TicketEntity(UserEntity user, PartyEntity party, ReceiptEntity receiptEntity) {
-        this.idExternal = UUID.randomUUID();
-        this.user = user;
-        this.party = party;
-        this.confirmed = false;
-        this.receiptEntity = receiptEntity;
+    @PrePersist
+    public void onSave(){
+        if(idExternal == null){
+            idExternal = UUID.randomUUID();
+        }
+        if(confirmed == null){
+            confirmed = false;
+        }
     }
 }
