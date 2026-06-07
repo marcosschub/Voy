@@ -2,6 +2,8 @@ package com.grupo12.Voy.features.users.Controller;
 
 
 import com.grupo12.Voy.features.parties.Dto.PartyUsersDto;
+import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
+import com.grupo12.Voy.features.tickets.models.DTO.TicketUsersDto;
 import com.grupo12.Voy.features.users.Dto.NewUserDto;
 import com.grupo12.Voy.features.users.Dto.UserDto;
 import com.grupo12.Voy.features.users.Dto.UserFollowDto;
@@ -29,7 +31,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/{idExternall}")
+    @GetMapping("/{idExternal}")
     ResponseEntity<UserDto> findbyExternalId(@PathVariable UUID idExternal){
         return ResponseEntity.ok(userService.findByExternalId(idExternal));
     }
@@ -49,14 +51,24 @@ public class UserController {
        return ResponseEntity.ok(userService.listFollowersList(idExternal));
     }
 
-    @GetMapping("/{idExternal}/MyParties")
+    @GetMapping("/{idExternal}/myParties")
     ResponseEntity<List<PartyUsersDto>> liistMyParties(@PathVariable UUID idExternal){
         return ResponseEntity.ok(userService.listMyParties(idExternal));
     }
 
-    @GetMapping("/{idExternal}/followparties")
+    @GetMapping("/{idExternal}/followParties")
     ResponseEntity<List<PartyUsersDto>> listFollowedParties(@PathVariable UUID idExternal){
         return ResponseEntity.ok((userService.listFollowedParties(idExternal)));
+    }
+
+    @GetMapping("/{idExternal}/myTickets")
+    ResponseEntity<List<TicketUsersDto>> listMyTickets(@PathVariable UUID idExternal){
+        return ResponseEntity.ok((userService.listTickets(idExternal)));
+    }
+
+    @GetMapping("/{idExternal}/myReceipts")
+    ResponseEntity<List<ReceiptResponseDTO>> listMyReceipts(@PathVariable UUID idExternal){
+        return ResponseEntity.ok((userService.listReceipt(idExternal)));
     }
 
     @DeleteMapping("/{id}")
@@ -71,8 +83,10 @@ public class UserController {
     }
 
     @PutMapping("/{idExternal}")
-    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID idExternal,@RequestBody UserUpdateDto userUpdateDto){
+    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID idExternal,
+                                             @RequestBody @Valid UserUpdateDto userUpdateDto){
         return ResponseEntity.ok(userService.updateUser(idExternal, userUpdateDto));
     }
+
 
 }
