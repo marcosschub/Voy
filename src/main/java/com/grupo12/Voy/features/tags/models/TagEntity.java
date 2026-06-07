@@ -6,8 +6,10 @@ import lombok.*;
 @Entity
 @Table(name = "etiquetas")
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class TagEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

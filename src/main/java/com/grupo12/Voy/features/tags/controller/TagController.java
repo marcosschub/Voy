@@ -2,6 +2,7 @@ package com.grupo12.Voy.features.tags.controller;
 
 import com.grupo12.Voy.features.tags.ITagService;
 import com.grupo12.Voy.features.tags.dto.TagsDTO;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,25 +21,25 @@ public class TagController {
         return ResponseEntity.ok(tagService.findAll());
     }
 
-    @GetMapping("/{nameTag}")
+    @GetMapping("/{name}")
     ResponseEntity<TagsDTO> findByName(@PathVariable String name){
         return ResponseEntity.ok(tagService.findByName(name));
     }
 
     @PostMapping
-    ResponseEntity<TagsDTO> create(@RequestBody TagsDTO tagsDTO){
+    ResponseEntity<TagsDTO> create(@RequestBody @Valid TagsDTO tagsDTO){
         tagService.save(tagsDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(tagsDTO);
     }
 
-    @PutMapping("/{nameTag}")
-    ResponseEntity<TagsDTO> update(@PathVariable String oldName,@RequestBody TagsDTO tagsDTO){
+    @PutMapping("/{oldName}")
+    ResponseEntity<TagsDTO> update(@PathVariable String oldName,@RequestBody @Valid TagsDTO tagsDTO){
         tagService.update(oldName,tagsDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping
-    ResponseEntity<TagsDTO> delete(@RequestBody TagsDTO tagsDTO){
+    ResponseEntity<TagsDTO> delete(@RequestBody @Valid TagsDTO tagsDTO){
         tagService.delete(tagsDTO);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
