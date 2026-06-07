@@ -1,6 +1,5 @@
 package com.grupo12.Voy.features.receipts.service;
 
-import com.grupo12.Voy.common.exceptions.ExceededAmountException;
 import com.grupo12.Voy.common.exceptions.NotAllowedException;
 import com.grupo12.Voy.features.parties.service.PartyService;
 import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
@@ -8,9 +7,6 @@ import com.grupo12.Voy.features.receipts.DTO.ReceiptRequestDTO;
 import com.grupo12.Voy.features.receipts.ReceiptRepository;
 import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.receipts.ReceiptMapper;
-import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
-import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
-import com.grupo12.Voy.features.tickets.service.TicketsService;
 import com.grupo12.Voy.features.users.Mapper.UserMapper;
 import com.grupo12.Voy.features.users.Service.UsersService;
 import com.grupo12.Voy.features.users.UserRepository;
@@ -34,7 +30,6 @@ public class ReceiptsService implements IReceiptService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ReceiptMapper receiptMapper;
-    //private final TicketsService ticketsService;
     private final PartyService partyService;
 
     public List<ReceiptResponseDTO> getAll(){
@@ -90,15 +85,6 @@ public class ReceiptsService implements IReceiptService {
         receiptRepository.delete(receipt);
     }
 
-//    @Transactional
-//    public List<TicketResponseDTO> purchaseTickets(ReceiptRequestDTO receiptDTO, TicketRequestDTO ticketDTO){
-//        int available = partyService.getByExternalId(ticketDTO.partyIdExternal()).guestLimit() - ticketsService.getByParty(ticketDTO.partyIdExternal()).size();
-//        if (receiptDTO.quantity() > available){
-//            throw new ExceededAmountException("Solo quedan "+ available + "entradas disponibles");
-//        }
-//        ReceiptResponseDTO receipt = createReceipt(receiptDTO);
-//        return ticketsService.createTicket(ticketDTO,receipt.quantity());
-//    }
 
     /*
     calcularDescuentoPorMedioDePago

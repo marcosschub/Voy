@@ -1,8 +1,5 @@
 package com.grupo12.Voy.features.tickets.controller;
 
-
-import com.grupo12.Voy.features.receipts.DTO.ReceiptRequestDTO;
-import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketAndReceiptDto;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
@@ -51,12 +48,6 @@ public class TicketsController {
     public ResponseEntity<List<TicketResponseDTO>> getUnconfirmedTicketsByParty(@RequestParam UUID partyId){
         return ResponseEntity.ok(ticketsService.getByPartyAndUnconfirmed(partyId));
     }
-
-//    @PostMapping
-//    public ResponseEntity<List<TicketResponseDTO>> createTickets(@RequestBody @Valid TicketRequestDTO ticketReq,
-//                                                                 @RequestParam Integer cantidad){
-//        return ResponseEntity.ok(ticketsService.createTicket(ticketReq,cantidad));
-//    }
 
     @PostMapping
     public ResponseEntity<TicketAndReceiptDto> purchaseTickets(@RequestBody @Valid TicketRequestDTO ticketDTO){
