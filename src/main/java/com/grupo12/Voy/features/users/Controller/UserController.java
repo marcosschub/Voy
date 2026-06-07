@@ -8,7 +8,6 @@ import com.grupo12.Voy.features.users.Dto.UserFollowDto;
 import com.grupo12.Voy.features.users.Dto.UserUpdateDto;
 import com.grupo12.Voy.features.users.Service.IUsersService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,16 +66,13 @@ public class UserController {
     }
 
     @PostMapping
-    ResponseEntity<NewUserDto> newUser(@RequestBody @Valid NewUserDto newUserDto){
+    ResponseEntity<UserDto> newUser(@RequestBody @Valid NewUserDto newUserDto){
         return new ResponseEntity<>(userService.newUser(newUserDto),HttpStatus.CREATED);
     }
 
     @PutMapping("/{idExternal}")
-    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID userUuid,@RequestBody UserUpdateDto userUpdateDto){
-        return ResponseEntity.ok(userService.updateUser(userUuid, userUpdateDto));
+    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID idExternal,@RequestBody UserUpdateDto userUpdateDto){
+        return ResponseEntity.ok(userService.updateUser(idExternal, userUpdateDto));
     }
-
-
-
 
 }
