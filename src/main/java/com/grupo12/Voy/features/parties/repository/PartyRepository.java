@@ -17,4 +17,5 @@ public interface PartyRepository extends JpaRepository<PartyEntity,Long> {
     List<PartyEntity> findByPartyAccesibilityAndLogicStateTrue(Boolean partyAccesibility);
     List<PartyEntity> findByCityAndPartyAccesibilityAndLogicStateTrue(String city, Boolean partyAccesibility);
     List<PartyEntity> findByStateAndLogicStateTrue(Boolean state);
+    Boolean existByTitle(String title);
 }

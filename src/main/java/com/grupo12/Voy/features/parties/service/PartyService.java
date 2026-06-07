@@ -9,7 +9,6 @@ import com.grupo12.Voy.features.parties.mapper.PartyMapper;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.tags.TagsRepository;
 import com.grupo12.Voy.features.tags.dto.TagsDTO;
-import com.grupo12.Voy.features.tags.mappers.TagMapper;
 import com.grupo12.Voy.features.tags.models.TagEntity;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
@@ -26,7 +25,7 @@ public class PartyService implements IPartyService {
     private final UserRepository userRepository;
     private final PartyMapper partyMapper;
     private final TagsRepository tagsRepository;
-    private final TagMapper tagMapper;
+
 
     @Override
     public List<PartyResDTO> getAll() {
@@ -83,6 +82,11 @@ public class PartyService implements IPartyService {
     public PartyResDTO create(PartyReqDTO dto) {
         UserEntity organizer = userRepository.findByExternalId(dto.idOrganizer())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer no encontrado"));
+
+        if(partyRepository.existByTitle(dto.title())){
+            throw new AlreadyExistsException("Ya existe un evento con ese titulo");
+        }
+
         PartyEntity party = partyMapper.toEntity(dto);
         party.setOrganizer(organizer);
         party.setExternalId(UUID.randomUUID());
