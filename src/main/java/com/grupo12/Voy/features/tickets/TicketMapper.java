@@ -17,7 +17,7 @@ public interface TicketMapper {
     @Mapping(target = "party", source = "party")
     TicketResponseDTO toResponseDto(TicketEntity ticket);
 
-    @Mapping(target = "userName", source = "user.userName")
+    @Mapping(target = "userName", source = "user.username")
     @Mapping(target = "userEmail", source = "user.email")
     @Mapping(target = "receipt", source = "receiptEntity")
     @Mapping(target = "party", source = "party")
