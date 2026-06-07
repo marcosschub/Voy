@@ -6,8 +6,6 @@ import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import com.grupo12.Voy.features.users.Role;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -24,20 +22,23 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "external_id",nullable = false,unique = true)
     private UUID externalId;
 
-    private String userName;
+    @Column(name = "usuario",nullable = false,unique = true)
+    private String username;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(name = "contraseña",nullable = false)
     private String password;
 
-    @ColumnDefault("false")
+    @Column(name = "accesibilidad",nullable = false)
     private Boolean accesibilityUser;
 
-    @Column(name = "fecha_nacimiento")
-    private Date birthDate;
+    @Column(name = "fecha_nacimiento",nullable = false)
+    private Date birthdate;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "roles_usuario", joinColumns = @JoinColumn(name = "roles"))
@@ -63,24 +64,22 @@ public class UserEntity {
     private List<PartyEntity> followedParties;
 
 
-    @ManyToMany
-    @JoinTable(
-            name = "eventos_creados",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_eventos")
-    )
+    @OneToMany(fetch = FetchType.LAZY)
     private List<PartyEntity> myParties;
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<TicketEntity> myTickets;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<ReceiptEntity> myRecipts;
+    private List<ReceiptEntity> myReceipts;
 
     @PrePersist
     public void onSave(){
         if(externalId==null) {
             externalId = UUID.randomUUID();
+        }
+        if(accesibilityUser==null) {
+            accesibilityUser = false;
         }
     }
 }
