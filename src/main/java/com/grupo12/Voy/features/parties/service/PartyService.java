@@ -43,7 +43,7 @@ public class PartyService implements IPartyService {
     public List<PartyResDTO> getByOrganizer(UUID organizerId) {
         List<PartyEntity> parties = partyRepository.findByOrganizerExternalIdAndLogicStateTrue(organizerId);
         if (parties.isEmpty()) {
-            throw new EntityNotFoundException("Evento no encontrado");
+            throw new EntityNotFoundException("No hay eventos para este organizador");
         }
         return partyMapper.toResDTOList(parties);
     }
