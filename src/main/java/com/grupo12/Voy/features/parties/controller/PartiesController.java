@@ -33,7 +33,7 @@ public class PartiesController  {
     }
 
     @GetMapping("/organizer/{idOrganizer}")
-    public ResponseEntity<List<PartyResDTO>> getByOrganizer(@PathVariable Long idOrganizer) {
+    public ResponseEntity<List<PartyResDTO>> getByOrganizer(@PathVariable UUID idOrganizer) {
         return ResponseEntity.ok(partyService.getByOrganizer(idOrganizer));
     }
 

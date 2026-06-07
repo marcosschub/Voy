@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface PartyRepository extends JpaRepository<PartyEntity,Long> {
-    List<PartyEntity> findByOrganizerId(Long organizerId);
+    List<PartyEntity> findByOrganizerId(UUID organizerId);
     Optional <PartyEntity> findByExternalId(UUID id);
     List<PartyEntity> findByPartyAccesibility(Boolean partyAccesibility);
     Optional<PartyEntity> findByTitleAndPartyAccesibility(String title, Boolean isPublic);

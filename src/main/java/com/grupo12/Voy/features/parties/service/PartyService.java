@@ -1,5 +1,6 @@
 package com.grupo12.Voy.features.parties.service;
 
+import com.grupo12.Voy.common.exceptions.AlreadyExistsException;
 import com.grupo12.Voy.common.exceptions.EntityInactiveException;
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
 import com.grupo12.Voy.features.parties.Dto.PartyReqDTO;
@@ -10,6 +11,7 @@ import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.tags.TagsRepository;
 import com.grupo12.Voy.features.tags.dto.TagsDTO;
 import com.grupo12.Voy.features.tags.mappers.TagMapper;
+import com.grupo12.Voy.features.tags.models.TagEntity;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +42,7 @@ public class PartyService implements IPartyService {
     }
 
     @Override
-    public List<PartyResDTO> getByOrganizer(Long organizerId) {
+    public List<PartyResDTO> getByOrganizer(UUID organizerId) {
         List<PartyEntity> parties = partyRepository.findByOrganizerId(organizerId);
         if (parties.isEmpty()) {
             throw new EntityNotFoundException("Evento no encontrado");
@@ -94,23 +96,36 @@ public class PartyService implements IPartyService {
         PartyEntity party = partyRepository
                 .findByExternalId(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
-        if(party.getLogicState()){
+        if(!party.getLogicState()){
             throw new EntityInactiveException("El evento se encuentra dado de baja");
         }
-        party.getTagsList().add(tagMapper.toEntity(nameTag));
-        return partyMapper.toResDTO(party);
+        TagEntity tag = tagMapper.toEntity(nameTag);
+
+        Boolean repetido = party.getTagsList().stream()
+                        .anyMatch( t -> t.getTagsId().equals(tag.getTagsId()));
+        if (repetido)
+            throw new AlreadyExistsException("La etiqueta ya está asignada al evento");
+
+        party.getTagsList().add(tag);
+        return partyMapper.toResDTO(partyRepository.save(party));
     }
 
     @Override
-    public void removeTag(UUID id,TagsDTO nameTag){
+    public void removeTag(UUID id, TagsDTO nameTag) {
         PartyEntity party = partyRepository
                 .findByExternalId(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
-        if(party.getLogicState())
+
+        if (!party.getLogicState())
             throw new EntityInactiveException("El evento se encuentra dado de baja");
-        if(party.getTagsList().remove(tagMapper.toEntity(nameTag)))
+
+        TagEntity tag = tagMapper.toEntity(nameTag);
+
+        boolean removed = party.getTagsList().remove(tag);
+        if (!removed)
             throw new EntityNotFoundException("No se encuentra esa etiqueta en el evento");
-        party.getTagsList().remove(tagMapper.toEntity(nameTag));
+
+        partyRepository.save(party);
     }
 
     @Override
