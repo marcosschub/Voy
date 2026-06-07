@@ -83,7 +83,7 @@ public class PartyService implements IPartyService {
         UserEntity organizer = userRepository.findByExternalId(dto.idOrganizer())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer no encontrado"));
 
-        if(partyRepository.existByTitle(dto.title())){
+        if(partyRepository.existsByTitle(dto.title())){
             throw new AlreadyExistsException("Ya existe un evento con ese titulo");
         }
 
