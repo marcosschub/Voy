@@ -12,6 +12,7 @@ import com.grupo12.Voy.features.tags.dto.TagsDTO;
 import com.grupo12.Voy.features.tags.models.TagEntity;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -77,7 +78,7 @@ public class PartyService implements IPartyService {
         }
         return partyMapper.toResDTOList(parties);
     }
-
+    @Transactional
     @Override
     public PartyResDTO create(PartyReqDTO dto) {
         UserEntity organizer = userRepository.findByExternalId(dto.idOrganizer())
