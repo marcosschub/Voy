@@ -1,8 +1,8 @@
 package com.grupo12.Voy.features.users.Dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
 
 public record NewUserDto (
         @NotBlank(message = "El email no puede estar en blanco")
@@ -16,5 +16,9 @@ public record NewUserDto (
         @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,20}$",
                 message = "La contraseña debe tener entre 8 y 20 caracteres, incluyendo mayúsculas, minúsculas," +
                         " números y caracteres especiales.")
-        String password) {
+        @NotNull(message = "La contraseña no puede estar en blanco")
+        String password,
+        @NotNull(message = "La fecha no puede ser nula")
+        @Past(message = "La fecha debe ser anterior a la de hoy")
+        LocalDate birthdate) {
 }

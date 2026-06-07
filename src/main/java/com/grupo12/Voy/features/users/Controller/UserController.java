@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @GetMapping("/{idExternal}/myParties")
-    ResponseEntity<List<PartyUsersDto>> liistMyParties(@PathVariable UUID idExternal){
+    ResponseEntity<List<PartyUsersDto>> listMyParties(@PathVariable UUID idExternal){
         return ResponseEntity.ok(userService.listMyParties(idExternal));
     }
 
@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteUser(@PathVariable Long id){
+    ResponseEntity<Void> deleteUser(@PathVariable UUID id){
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

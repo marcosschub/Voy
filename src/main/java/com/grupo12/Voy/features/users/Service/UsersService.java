@@ -56,15 +56,15 @@ public class UsersService implements IUsersService{
     }
 
     @Override
-    public void deleteUser(Long userId){
-        userRepository.delete(userRepository.findById(userId)
+    public void deleteUser(UUID externalId){
+        userRepository.delete(userRepository.findByExternalId(externalId)
                 .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado")));
     }
 
     @Override
     public UserDto newUser(NewUserDto newUserDto){
         UserEntity user = newUserDtoMapper.newUserToEntity(newUserDto);
-        if(userRepository.existsByEmail(newUserDto.email()) &&
+        if(userRepository.existsByEmail(newUserDto.email()) ||
                 userRepository.existsByUsername(newUserDto.username())){
             throw new EntityDuplicatedException("Usuario duplicado");
         }
