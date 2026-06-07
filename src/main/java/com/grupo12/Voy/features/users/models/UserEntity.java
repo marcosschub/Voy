@@ -64,7 +64,7 @@ public class UserEntity {
     private List<PartyEntity> followedParties;
 
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<PartyEntity> myParties;
 
     @OneToMany(fetch = FetchType.LAZY)

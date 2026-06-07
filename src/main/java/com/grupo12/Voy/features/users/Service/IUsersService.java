@@ -19,9 +19,11 @@ public interface IUsersService {
     UserDto newUser(NewUserDto newUserDto);
     UserUpdateDto updateUser(UUID userUuid, UserUpdateDto userUpdateDto);
     List<UserFollowDto> listFollowList(UUID userUuid);
+    List<UserFollowDto> alterFollow(UUID userId, UUID otherUserId);
     List<UserFollowDto> listFollowersList(UUID userUuid);
     List<PartyUsersDto> listMyParties(UUID userId);
     List<PartyUsersDto> listFollowedParties(UUID userUuid);
+    List<PartyUsersDto> alterFollowParty(UUID userId, UUID partyId);
     List<TicketUsersDto> listTickets(UUID userUuid);
     List<ReceiptResponseDTO> listReceipt(UUID userUuid);
 }

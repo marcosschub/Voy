@@ -46,6 +46,11 @@ public class UserController {
         return ResponseEntity.ok(userService.listFollowList(idExternal));
     }
 
+    @PatchMapping("/{idUser}/follow/user/{idOtherUser}")
+    ResponseEntity<List<UserFollowDto>> alterFollowUser(@PathVariable UUID idUser,@PathVariable UUID idOtherUser){
+        return ResponseEntity.ok(userService.alterFollow(idUser,idOtherUser));
+    }
+
     @GetMapping("/{idExternal}/followers")
     ResponseEntity<List<UserFollowDto>> listFollowersList(@PathVariable UUID idExternal){
        return ResponseEntity.ok(userService.listFollowersList(idExternal));
@@ -59,6 +64,12 @@ public class UserController {
     @GetMapping("/{idExternal}/followParties")
     ResponseEntity<List<PartyUsersDto>> listFollowedParties(@PathVariable UUID idExternal){
         return ResponseEntity.ok((userService.listFollowedParties(idExternal)));
+    }
+
+    @PatchMapping("/{idExternal}/follow/party/{idParty}")
+    ResponseEntity<List<PartyUsersDto>> alterFollowParty(@PathVariable UUID idExternal,
+                                                         @PathVariable UUID idParty){
+        return ResponseEntity.ok(userService.alterFollowParty(idExternal,idParty));
     }
 
     @GetMapping("/{idExternal}/myTickets")
