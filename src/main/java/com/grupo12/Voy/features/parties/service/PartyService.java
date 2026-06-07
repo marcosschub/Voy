@@ -96,7 +96,7 @@ public class PartyService implements IPartyService {
                 .findByExternalIdAndLogicStateTrue(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
         TagEntity tag = tagsRepository.findByName(nameTag.name())
-                .orElseGet(() -> tagsRepository.save(tagMapper.toEntity(nameTag)));
+                .orElseThrow(()->new EntityNotFoundException("No se encuentra la etiqueta " + nameTag.name()));
 
         Boolean repetido = party.getTagsList().stream()
                         .anyMatch( t -> t.getTagsId().equals(tag.getTagsId()));
