@@ -37,89 +37,89 @@ public class UsersService implements IUsersService{
     private ReceiptMapper receiptMapper;
     private PartyMapper partyMapper;
 
+    @Override
     public UserDto findByExternalId(UUID userUuid){
         return userMapper.userToDto(userRepository.findByExternalId(userUuid)
                 .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado.")));
     }
 
+    @Override
     public List<UserDto> getAll(){
         return userRepository.findAll().stream().map(userMapper::userToDto).toList();
     }
 
+
+    @Override
     public UserDto findByEmail(String userEmail){
         return userMapper.userToDto(userRepository.findByEmail(userEmail)
                 .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado")));
     }
 
+    @Override
     public void deleteUser(Long userId){
         userRepository.delete(userRepository.findById(userId)
                 .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado")));
     }
 
+    @Override
     public UserDto newUser(NewUserDto newUserDto){
-       UserEntity user = newUserDtoMapper.newUserToEntity(newUserDto);
-        if(userRepository.existsByEmail(newUserDto.email())){
+        UserEntity user = newUserDtoMapper.newUserToEntity(newUserDto);
+        if(userRepository.existsByEmail(newUserDto.email()) &&
+                userRepository.existsByUsername(newUserDto.username())){
             throw new EntityDuplicatedException("Usuario duplicado");
         }
         return userMapper.userToDto(userRepository.save(user));
     }
 
+    @Override
     @Transactional
     public UserUpdateDto updateUser(UUID userUuid, UserUpdateDto userUpdateDto){
-       UserEntity user =userRepository.findByExternalId(userUuid)
-                .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado"));
-
-       if(userUpdateDto.username() != null && !userUpdateDto.username().isBlank()){
-           user.setUsername(userUpdateDto.username());
-       }
-       if (userUpdateDto.password()!= null && !userUpdateDto.password().isBlank()){
-           user.setPassword(userUpdateDto.password());
-       }
-
+       UserEntity user =userRepository
+               .findByExternalId(userUuid)
+               .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado"));
+       user.setUsername(userUpdateDto.username());
+       user.setPassword(userUpdateDto.password());
        return userUpdateMapper.toDto(userRepository.save(user));
     }
 
+    @Override
     public List<UserFollowDto> listFollowList(UUID userUuid){
           UserEntity  user = userRepository.findByExternalId(userUuid)
                   .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado"));
           return user.getFollowsList().stream().map(userFollowMapper::toDto).toList();
     }
 
+    @Override
     public List<UserFollowDto> listFollowersList(UUID userUuid){
         UserEntity  user = userRepository.findByExternalId(userUuid)
                 .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado"));
         return user.getFollowersList().stream().map(userFollowMapper::toDto).toList();
     }
 
+    @Override
     public List<TicketUsersDto> listTickets(UUID userUuid){
         UserEntity user = userRepository.findByExternalId(userUuid)
                 .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado"));
         return user.getMyTickets().stream().map(ticketMapper::toUsersDto).toList();
     }
 
+    @Override
     public List<ReceiptResponseDTO> listReceipt(UUID userUuid){
         UserEntity user = userRepository.findByExternalId(userUuid)
                 .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado"));
         return user.getMyReceipts().stream().map(receiptMapper::toResponseDTO).toList();
     }
 
-   public List<PartyUsersDto> listFollowedParties(UUID userUuid){
+    @Override
+    public List<PartyUsersDto> listFollowedParties(UUID userUuid){
         UserEntity user = userRepository.findByExternalId(userUuid)
                 .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado"));
         return user.getFollowedParties().stream().map(partyMapper::toUserFromEntity).toList();
     }
 
+    @Override
     public List<PartyUsersDto> listMyParties(UUID userId){
-    UserEntity user = userRepository.findByExternalId(userId).orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado"));
-    return user.getMyParties().stream().map(partyMapper::toUserFromEntity).toList();
+        UserEntity user = userRepository.findByExternalId(userId).orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado"));
+        return user.getMyParties().stream().map(partyMapper::toUserFromEntity).toList();
     }
-
-
-
-    /*
-    ver notificaciones
-
-     */
-
-
 }
