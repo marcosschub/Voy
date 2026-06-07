@@ -12,7 +12,7 @@ public interface IPartyService {
 
     PartyResDTO getByExternalId(UUID id);
 
-    List<PartyResDTO> getByOrganizer(Long organizerId);
+    List<PartyResDTO> getByOrganizer(UUID organizerId);
 
     PartyResDTO getByTitle(String title);
 
