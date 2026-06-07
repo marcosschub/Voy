@@ -13,6 +13,12 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ExceptionHandlerGlobal {
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ErrorDetails> handlerAlreadyExistsException(AlreadyExistsException ex, WebRequest request){
+        ErrorDetails errorDetails = errorBuilder(ex,request);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+    }
+
     @ExceptionHandler(EntityDuplicatedException.class)
     public ResponseEntity<ErrorDetails> handlerEntityDuplicatedException(EntityDuplicatedException ex, WebRequest request){
         ErrorDetails errorDetails = errorBuilder(ex,request);

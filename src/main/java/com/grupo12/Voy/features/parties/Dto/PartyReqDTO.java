@@ -8,10 +8,11 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public record PartyReqDTO(
         @NotNull
-        Long idOrganizer,
+        UUID idOrganizer,
         @NotBlank(message = "El titulo es obligatorio")
         String title,
         @NotNull(message = "La descripcion no puede ser nula")

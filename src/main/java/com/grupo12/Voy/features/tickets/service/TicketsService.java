@@ -63,7 +63,7 @@ public class TicketsService  implements ITicketsService{
     }
 
     public List<TicketResponseDTO> getByParty(UUID partyId){
-        PartyEntity party = partyRepository.findByExternalId(partyId)
+        PartyEntity party = partyRepository.findByExternalIdAndLogicStateTrue(partyId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario"));
         return ticketRepository.findByParty(party).stream()
                 .map(ticketMapper::toResponseDto).toList();
@@ -72,14 +72,14 @@ public class TicketsService  implements ITicketsService{
     public List<TicketResponseDTO> getByUserAndParty(UUID userId,UUID partyId){
         UserEntity user = userRepository.findByExternalId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario"));
-        PartyEntity party = partyRepository.findByExternalId(partyId)
+        PartyEntity party = partyRepository.findByExternalIdAndLogicStateTrue(partyId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra la fiesta"));
         return ticketRepository.findByUserAndParty(user,party).stream()
                 .map(ticketMapper::toResponseDto).toList();
     }
 
     public List<TicketResponseDTO> getByPartyAndConfirmed(UUID partyId){
-        PartyEntity party = partyRepository.findByExternalId(partyId)
+        PartyEntity party = partyRepository.findByExternalIdAndLogicStateTrue(partyId)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el evento"));
         return ticketRepository.findByParty(party).stream()
                 .filter(x -> x.getConfirmed() == true)
@@ -88,7 +88,7 @@ public class TicketsService  implements ITicketsService{
     }
 
     public List<TicketResponseDTO> getByPartyAndUnconfirmed(UUID partyIdExt){
-        PartyEntity party = partyRepository.findByExternalId(partyIdExt)
+        PartyEntity party = partyRepository.findByExternalIdAndLogicStateTrue(partyIdExt)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el evento"));
         return ticketRepository.findByParty(party).stream()
                 .filter(x -> x.getConfirmed() == false)
@@ -109,7 +109,7 @@ public class TicketsService  implements ITicketsService{
                 .findByExternalId(request.userIdExternal())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario solicitado"));
         PartyEntity party = partyRepository
-                .findByExternalId(request.partyIdExternal())
+                .findByExternalIdAndLogicStateTrue(request.partyIdExternal())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra la fiesta solicitada"));
         ReceiptEntity receipt = receiptRepository
                 .findByExternalId(request.receiptExternalId())
