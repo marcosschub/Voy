@@ -69,8 +69,8 @@ public class UsersService implements IUsersService{
        UserEntity user =userRepository.findByExternalId(userUuid)
                 .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado"));
 
-       if(userUpdateDto.userName() != null && !userUpdateDto.userName().isBlank()){
-           user.setUserName(userUpdateDto.userName());
+       if(userUpdateDto.username() != null && !userUpdateDto.username().isBlank()){
+           user.setUsername(userUpdateDto.username());
        }
        if (userUpdateDto.password()!= null && !userUpdateDto.password().isBlank()){
            user.setPassword(userUpdateDto.password());
@@ -100,7 +100,7 @@ public class UsersService implements IUsersService{
     public List<ReceiptResponseDTO> listReceipt(UUID userUuid){
         UserEntity user = userRepository.findByExternalId(userUuid)
                 .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado"));
-        return user.getMyRecipts().stream().map(receiptMapper::toResponseDTO).toList();
+        return user.getMyReceipts().stream().map(receiptMapper::toResponseDTO).toList();
     }
 
    public List<PartyUsersDto> listFollowedParties(UUID userUuid){
