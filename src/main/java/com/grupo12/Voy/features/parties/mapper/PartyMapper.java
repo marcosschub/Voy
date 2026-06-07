@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", uses = UserMapper.class)
 public interface PartyMapper {
     @Mapping(source = "organizer.email", target = "organizerName")
+    @Mapping(source = "tagsList", target = "tags")
     PartyResDTO toResDTO (PartyEntity party);
 
     List<PartyResDTO> toResDTOList (List<PartyEntity> parties);
@@ -26,7 +27,7 @@ public interface PartyMapper {
     PartyUsersDto toUserFromEntity(PartyEntity party);
 
 
-    default Set<String> tagsToStrings(Set<TagEntity> tags ){
+    default Set<String> tagsToStrings(List<TagEntity> tags ){
         if(tags==null) return null;
         return tags.stream()
                 .map(TagEntity::getName)

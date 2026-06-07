@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 @Getter
@@ -38,7 +39,7 @@ public class PartyEntity {
     @JoinTable(name = "etiquetas_por_evento",
             joinColumns = @JoinColumn(name = "evento_id"),
             inverseJoinColumns = @JoinColumn(name = "etiquetas_id"))
-    private List<TagEntity> tagsList;
+    private List<TagEntity> tagsList = new ArrayList<>();
 
     @Column(name = "localidad")
     private String city;
@@ -48,7 +49,7 @@ public class PartyEntity {
 
     @Column(name = "estado")
     @ColumnDefault("true")
-    private Boolean logicState; // activo/borrado logico
+    private Boolean logicState;
 
     private Integer guestLimit;
 
@@ -68,5 +69,6 @@ public class PartyEntity {
     @PrePersist
     public void onSave() {
         if (state == null) state = true;
+        if (logicState == null) logicState = true;
     }
 }

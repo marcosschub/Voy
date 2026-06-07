@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public record PartyResDTO (
-     UUID idExternal,
+     UUID externalId,
      String title,
      String description,
      String city,

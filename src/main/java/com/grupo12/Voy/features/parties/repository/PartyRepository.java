@@ -10,10 +10,11 @@ import java.util.UUID;
 
 @Repository
 public interface PartyRepository extends JpaRepository<PartyEntity,Long> {
-    List<PartyEntity> findByOrganizerId(UUID organizerId);
-    Optional <PartyEntity> findByExternalId(UUID id);
-    List<PartyEntity> findByPartyAccesibility(Boolean partyAccesibility);
-    Optional<PartyEntity> findByTitleAndPartyAccesibility(String title, Boolean isPublic);
-    List<PartyEntity> findByCityAndPartyAccesibility(String city, Boolean isPublic);
-    List<PartyEntity> findByState(Boolean state);
+    List<PartyEntity> findByLogicStateTrue();
+    Optional<PartyEntity> findByExternalIdAndLogicStateTrue(UUID externalId);
+    List<PartyEntity> findByOrganizerExternalIdAndLogicStateTrue(UUID organizerId);
+    Optional<PartyEntity> findByTitleAndPartyAccesibilityAndLogicStateTrue(String title, Boolean partyAccesibility);
+    List<PartyEntity> findByPartyAccesibilityAndLogicStateTrue(Boolean partyAccesibility);
+    List<PartyEntity> findByCityAndPartyAccesibilityAndLogicStateTrue(String city, Boolean partyAccesibility);
+    List<PartyEntity> findByStateAndLogicStateTrue(Boolean state);
 }
