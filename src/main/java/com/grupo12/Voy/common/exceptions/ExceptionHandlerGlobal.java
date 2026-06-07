@@ -43,6 +43,12 @@ public class ExceptionHandlerGlobal {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetails);
     }
 
+    @ExceptionHandler(EntityInactiveException.class)
+    public ResponseEntity<ErrorDetails> handlerEntityInactiveException(EntityInactiveException ex, WebRequest request){
+        ErrorDetails errorDetails = errorBuilder(ex,request);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorDetails> handlerValidations(MethodArgumentNotValidException ex,WebRequest request) {
         String errorList = ex
