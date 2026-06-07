@@ -25,7 +25,6 @@ public interface TicketMapper {
 
     @Mapping(target = "user.externalId", source = "userIdExternal")
     @Mapping(target = "party.externalId", source = "partyIdExternal")
-    @Mapping(target = "receiptEntity.externalId", source = "receiptExternalId")
     TicketEntity toEntity(TicketRequestDTO ticket);
 
 }

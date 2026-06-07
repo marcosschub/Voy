@@ -1,6 +1,9 @@
 package com.grupo12.Voy.features.tickets.controller;
 
 
+import com.grupo12.Voy.features.receipts.DTO.ReceiptRequestDTO;
+import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
+import com.grupo12.Voy.features.tickets.models.DTO.TicketAndReceiptDto;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
 import com.grupo12.Voy.features.tickets.service.ITicketsService;
@@ -49,10 +52,15 @@ public class TicketsController {
         return ResponseEntity.ok(ticketsService.getByPartyAndUnconfirmed(partyId));
     }
 
+//    @PostMapping
+//    public ResponseEntity<List<TicketResponseDTO>> createTickets(@RequestBody @Valid TicketRequestDTO ticketReq,
+//                                                                 @RequestParam Integer cantidad){
+//        return ResponseEntity.ok(ticketsService.createTicket(ticketReq,cantidad));
+//    }
+
     @PostMapping
-    public ResponseEntity<List<TicketResponseDTO>> createTickets(@RequestBody @Valid TicketRequestDTO ticketReq,
-                                                                 @RequestParam Integer cantidad){
-        return ResponseEntity.ok(ticketsService.createTicket(ticketReq,cantidad));
+    public ResponseEntity<TicketAndReceiptDto> purchaseTickets(@RequestBody @Valid TicketRequestDTO ticketDTO){
+        return ResponseEntity.ok(ticketsService.purchaseTickets(ticketDTO));
     }
 
     @PatchMapping("/{userId}/{ticketId}/transferTicket")
