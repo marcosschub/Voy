@@ -12,12 +12,14 @@ import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
+import com.grupo12.Voy.features.tickets.specification.TicketSpecification;
 import com.grupo12.Voy.features.users.Mapper.UserMapper;
 import com.grupo12.Voy.features.users.Service.UsersService;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
@@ -33,8 +35,18 @@ public class TicketsService  implements ITicketsService{
     private final ReceiptRepository receiptRepository;
     private final UserMapper userMapper;
 
-    public List<TicketResponseDTO> getAll(){
-        return ticketRepository.findAll()
+    @Override
+    public List<TicketResponseDTO> getAll(UUID ticketId, Boolean isConfimed,
+                                          String title, String usernameOrganizer, String usernameUser){
+        PredicateSpecification<TicketEntity> spec = PredicateSpecification.allOf(
+                TicketSpecification.externalIdEqual(ticketId),
+                TicketSpecification.isConfirmed(isConfimed),
+                TicketSpecification.partyTitleContains(title),
+                TicketSpecification.partyOrganizerNameContains(usernameOrganizer),
+                TicketSpecification.userUsernameContains(usernameUser)
+        );
+
+        return ticketRepository.findAll(spec)
                 .stream().map(ticketMapper::toResponseDto).toList();
     }
 
