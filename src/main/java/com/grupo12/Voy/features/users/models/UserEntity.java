@@ -63,11 +63,10 @@ public class UserEntity {
     )
     private List<PartyEntity> followedParties;
 
-
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL, mappedBy = "organizer")
     private List<PartyEntity> myParties;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private List<TicketEntity> myTickets;
 
     @OneToMany(fetch = FetchType.LAZY)
@@ -75,11 +74,7 @@ public class UserEntity {
 
     @PrePersist
     public void onSave(){
-        if(externalId==null) {
-            externalId = UUID.randomUUID();
-        }
-        if(accesibilityUser==null) {
-            accesibilityUser = false;
-        }
+        if(externalId==null) externalId = UUID.randomUUID();
+        if(accesibilityUser==null) accesibilityUser = false;
     }
 }

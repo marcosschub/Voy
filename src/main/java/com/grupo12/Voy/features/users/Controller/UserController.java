@@ -2,6 +2,8 @@ package com.grupo12.Voy.features.users.Controller;
 
 
 import com.grupo12.Voy.features.parties.Dto.PartyUsersDto;
+import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
+import com.grupo12.Voy.features.tickets.models.DTO.TicketUsersDto;
 import com.grupo12.Voy.features.users.Dto.NewUserDto;
 import com.grupo12.Voy.features.users.Dto.UserDto;
 import com.grupo12.Voy.features.users.Dto.UserFollowDto;
@@ -24,12 +26,15 @@ public class UserController {
     private final IUsersService userService;
 
     @GetMapping
-    ResponseEntity<List<UserDto>> getAll(){
-        return ResponseEntity.ok(userService.getAll());
+    ResponseEntity<List<UserDto>> getAll(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email
+    ){
+        return ResponseEntity.ok(userService.getAll(username,email));
     }
 
 
-    @GetMapping("/{idExternall}")
+    @GetMapping("/{idExternal}")
     ResponseEntity<UserDto> findbyExternalId(@PathVariable UUID idExternal){
         return ResponseEntity.ok(userService.findByExternalId(idExternal));
     }
@@ -39,28 +44,8 @@ public class UserController {
         return ResponseEntity.ok(userService.findByEmail(email));
     }
 
-    @GetMapping("/{idExternal}/follows")
-    ResponseEntity<List<UserFollowDto>> listFollowList(@PathVariable UUID idExternal){
-        return ResponseEntity.ok(userService.listFollowList(idExternal));
-    }
-
-    @GetMapping("/{idExternal}/followers")
-    ResponseEntity<List<UserFollowDto>> listFollowersList(@PathVariable UUID idExternal){
-       return ResponseEntity.ok(userService.listFollowersList(idExternal));
-    }
-
-    @GetMapping("/{idExternal}/MyParties")
-    ResponseEntity<List<PartyUsersDto>> liistMyParties(@PathVariable UUID idExternal){
-        return ResponseEntity.ok(userService.listMyParties(idExternal));
-    }
-
-    @GetMapping("/{idExternal}/followparties")
-    ResponseEntity<List<PartyUsersDto>> listFollowedParties(@PathVariable UUID idExternal){
-        return ResponseEntity.ok((userService.listFollowedParties(idExternal)));
-    }
-
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteUser(@PathVariable Long id){
+    ResponseEntity<Void> deleteUser(@PathVariable UUID id){
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
@@ -71,8 +56,49 @@ public class UserController {
     }
 
     @PutMapping("/{idExternal}")
-    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID idExternal,@RequestBody UserUpdateDto userUpdateDto){
+    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID idExternal,
+                                             @RequestBody @Valid UserUpdateDto userUpdateDto){
         return ResponseEntity.ok(userService.updateUser(idExternal, userUpdateDto));
     }
 
+    @GetMapping("/{idExternal}/follows")
+    ResponseEntity<List<UserFollowDto>> listFollowList(@PathVariable UUID idExternal){
+        return ResponseEntity.ok(userService.listFollowList(idExternal));
+    }
+
+    @PatchMapping("/{idUser}/follow/user/{idOtherUser}")
+    ResponseEntity<List<UserFollowDto>> alterFollowUser(@PathVariable UUID idUser,@PathVariable UUID idOtherUser){
+        return ResponseEntity.ok(userService.alterFollow(idUser,idOtherUser));
+    }
+
+    @GetMapping("/{idExternal}/followers")
+    ResponseEntity<List<UserFollowDto>> listFollowersList(@PathVariable UUID idExternal){
+       return ResponseEntity.ok(userService.listFollowersList(idExternal));
+    }
+
+    @GetMapping("/{idExternal}/myParties")
+    ResponseEntity<List<PartyUsersDto>> listMyParties(@PathVariable UUID idExternal){
+        return ResponseEntity.ok(userService.listMyParties(idExternal));
+    }
+
+    @GetMapping("/{idExternal}/followParties")
+    ResponseEntity<List<PartyUsersDto>> listFollowedParties(@PathVariable UUID idExternal){
+        return ResponseEntity.ok((userService.listFollowedParties(idExternal)));
+    }
+
+    @PatchMapping("/{idExternal}/follow/party/{idParty}")
+    ResponseEntity<List<PartyUsersDto>> alterFollowParty(@PathVariable UUID idExternal,
+                                                         @PathVariable UUID idParty){
+        return ResponseEntity.ok(userService.alterFollowParty(idExternal,idParty));
+    }
+
+    @GetMapping("/{idExternal}/myTickets")
+    ResponseEntity<List<TicketUsersDto>> listMyTickets(@PathVariable UUID idExternal){
+        return ResponseEntity.ok((userService.listTickets(idExternal)));
+    }
+
+    @GetMapping("/{idExternal}/myReceipts")
+    ResponseEntity<List<ReceiptResponseDTO>> listMyReceipts(@PathVariable UUID idExternal){
+        return ResponseEntity.ok((userService.listReceipt(idExternal)));
+    }
 }
