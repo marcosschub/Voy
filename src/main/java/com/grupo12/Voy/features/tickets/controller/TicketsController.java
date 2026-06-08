@@ -61,9 +61,9 @@ public class TicketsController {
         return ResponseEntity.ok(ticketsService.transferTicket(ticketId,userId,newUserExtId));
     }
 
-    @PatchMapping
-    public ResponseEntity<TicketResponseDTO> acceptTicket(@PathVariable UUID userID,
+    @PatchMapping("/accept/{userId}")
+    public ResponseEntity<TicketResponseDTO> acceptTicket(@PathVariable UUID userId,
                                                           @RequestParam UUID ticketId){
-        return ResponseEntity.ok(ticketsService.acceptTicket(userID, ticketId));
+        return ResponseEntity.ok(ticketsService.acceptTicket(userId, ticketId));
     }
 }
