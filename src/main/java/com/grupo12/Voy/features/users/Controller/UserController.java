@@ -26,8 +26,11 @@ public class UserController {
     private final IUsersService userService;
 
     @GetMapping
-    ResponseEntity<List<UserDto>> getAll(){
-        return ResponseEntity.ok(userService.getAll());
+    ResponseEntity<List<UserDto>> getAll(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email
+    ){
+        return ResponseEntity.ok(userService.getAll(username,email));
     }
 
 
@@ -39,6 +42,23 @@ public class UserController {
     @GetMapping ("/{email}")
     ResponseEntity<UserDto> findByEmail(@PathVariable String email){
         return ResponseEntity.ok(userService.findByEmail(email));
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> deleteUser(@PathVariable UUID id){
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping
+    ResponseEntity<UserDto> newUser(@RequestBody @Valid NewUserDto newUserDto){
+        return new ResponseEntity<>(userService.newUser(newUserDto),HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{idExternal}")
+    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID idExternal,
+                                             @RequestBody @Valid UserUpdateDto userUpdateDto){
+        return ResponseEntity.ok(userService.updateUser(idExternal, userUpdateDto));
     }
 
     @GetMapping("/{idExternal}/follows")
@@ -81,23 +101,4 @@ public class UserController {
     ResponseEntity<List<ReceiptResponseDTO>> listMyReceipts(@PathVariable UUID idExternal){
         return ResponseEntity.ok((userService.listReceipt(idExternal)));
     }
-
-    @DeleteMapping("/{id}")
-    ResponseEntity<Void> deleteUser(@PathVariable UUID id){
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping
-    ResponseEntity<UserDto> newUser(@RequestBody @Valid NewUserDto newUserDto){
-        return new ResponseEntity<>(userService.newUser(newUserDto),HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{idExternal}")
-    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID idExternal,
-                                             @RequestBody @Valid UserUpdateDto userUpdateDto){
-        return ResponseEntity.ok(userService.updateUser(idExternal, userUpdateDto));
-    }
-
-
 }

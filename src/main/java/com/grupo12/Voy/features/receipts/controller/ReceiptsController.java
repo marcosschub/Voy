@@ -6,8 +6,12 @@ import com.grupo12.Voy.features.receipts.service.IReceiptService;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,10 +23,25 @@ public class ReceiptsController {
 
 
     @GetMapping
-    ResponseEntity<List<ReceiptResponseDTO>> getAll(){
-        return ResponseEntity.ok(receiptsService.getAll());
-    }
+    ResponseEntity<List<ReceiptResponseDTO>> search(
+            @RequestParam(required = false) UUID externalId,
+            @RequestParam(required = false) String paymentMethod,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) BigDecimal minFinalPrice,
+            @RequestParam(required = false) BigDecimal maxFinalPrice,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @RequestParam(required = false) Integer minQuantity,
+            @RequestParam(required = false) Integer maxQuantity) {
 
+        return ResponseEntity.ok(receiptsService.getAll(
+                externalId, paymentMethod,
+                minPrice, maxPrice,
+                minFinalPrice, maxFinalPrice,
+                from, to,
+                minQuantity, maxQuantity));
+    }
     @GetMapping("/{receiptExtId}")
     ResponseEntity<ReceiptResponseDTO> getByExternalId(@PathVariable UUID receiptExtId){
         return ResponseEntity.ok(receiptsService.getByExternalId(receiptExtId));

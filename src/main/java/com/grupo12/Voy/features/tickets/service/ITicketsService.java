@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ITicketsService {
+    List<TicketResponseDTO> getAll(UUID ticketId, Boolean isConfimed,
+                                   String title, String usernameOrganizer, String usernameUser);
     TicketResponseDTO getByExternalId (UUID id);
     List<TicketResponseDTO> getByUser(UUID id);
     List<TicketResponseDTO> getByUserEmail(String email);

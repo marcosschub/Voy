@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IPartyService {
-    List<PartyResDTO> getAll();
+    List<PartyResDTO> getAll(UUID partyId, UUID organizerId, String title, Boolean isPublic, String city);
 
     PartyResDTO getByExternalId(UUID id);
 

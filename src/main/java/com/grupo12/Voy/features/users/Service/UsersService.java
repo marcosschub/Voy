@@ -21,7 +21,9 @@ import com.grupo12.Voy.features.users.Mapper.UserUpdateMapper;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import com.grupo12.Voy.features.users.Dto.UserDto;
+import com.grupo12.Voy.features.users.specification.UserSpecification;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -46,8 +48,13 @@ public class UsersService implements IUsersService{
     }
 
     @Override
-    public List<UserDto> getAll(){
-        return userRepository.findAll().stream().map(userMapper::userToDto).toList();
+    public List<UserDto> getAll(String username, String email){
+        PredicateSpecification<UserEntity> spec = PredicateSpecification.allOf(
+                UserSpecification.usernameContains(username),
+                UserSpecification.emailContains(email)
+        );
+
+        return userRepository.findAll(spec).stream().map(userMapper::userToDto).toList();
     }
 
 
@@ -109,18 +116,6 @@ public class UsersService implements IUsersService{
     }
 
     @Override
-    public List<TicketUsersDto> listTickets(UUID userUuid){
-        UserEntity user = getUser(userUuid);
-        return user.getMyTickets().stream().map(ticketMapper::toUsersDto).toList();
-    }
-
-    @Override
-    public List<ReceiptResponseDTO> listReceipt(UUID userUuid){
-        UserEntity user = getUser(userUuid);
-        return user.getMyReceipts().stream().map(receiptMapper::toResponseDTO).toList();
-    }
-
-    @Override
     public List<PartyUsersDto> listFollowedParties(UUID userUuid){
         UserEntity user = getUser(userUuid);
         return user.getFollowedParties().stream().map(partyMapper::toUserFromEntity).toList();
@@ -148,6 +143,19 @@ public class UsersService implements IUsersService{
         UserEntity user = getUser(userId);
         return user.getMyParties().stream().map(partyMapper::toUserFromEntity).toList();
     }
+
+    @Override
+    public List<TicketUsersDto> listTickets(UUID userUuid){
+        UserEntity user = getUser(userUuid);
+        return user.getMyTickets().stream().map(ticketMapper::toUsersDto).toList();
+    }
+
+    @Override
+    public List<ReceiptResponseDTO> listReceipt(UUID userUuid){
+        UserEntity user = getUser(userUuid);
+        return user.getMyReceipts().stream().map(receiptMapper::toResponseDTO).toList();
+    }
+
 
     private UserEntity getUser(UUID userId){
         return userRepository
