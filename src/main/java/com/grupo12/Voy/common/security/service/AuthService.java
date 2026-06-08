@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final CredentialsRepository credentialsRepository;
     private final AuthenticationManager authenticationManager;
+
     public UserDetails authenticate(AuthRequest input) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -21,9 +22,8 @@ public class AuthService {
                         input.password()
                 )
         );
-        return
-                credentialsRepository.findByUsername(input.username()).orElseThrow(
-                        () -> new UsernameNotFoundException("Usuario no encontrado")
-                        );
+        return credentialsRepository
+                .findByUsername(input.username())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.security.SignatureException;
 
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -18,7 +17,6 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-
 
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -44,8 +42,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
                     authException.getMessage();
         };
 
-        String jsonResponse = String.format("{\"error\": \"%s\"," +
-                        "\"status\": %d, \"path\": \"%s\"}",
+        String jsonResponse = String.format("{\"error\": \"%s\", \"status\": %d, \"path\": \"%s\"}",
                 errorMessage,
                 HttpServletResponse.SC_UNAUTHORIZED,
                 request.getRequestURI());

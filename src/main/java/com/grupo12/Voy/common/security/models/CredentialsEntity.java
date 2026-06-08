@@ -19,8 +19,7 @@ import java.util.Set;
 @Builder
 public class CredentialsEntity implements UserDetails {
     @Id
-    @GeneratedValue(strategy =
-            jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true,nullable = false)
@@ -33,8 +32,7 @@ public class CredentialsEntity implements UserDetails {
     private Boolean enabled;
 
     @OneToOne
-    @JoinColumn(name = "usuario_id", referencedColumnName = "id", unique
-            = true)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id", unique = true)
     private UserEntity usuario;
 
     @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)

@@ -3,6 +3,11 @@ package com.grupo12.Voy.features.users.Service;
 
 import com.grupo12.Voy.common.exceptions.EntityDuplicatedException;
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
+import com.grupo12.Voy.common.security.enums.Roles;
+import com.grupo12.Voy.common.security.models.CredentialsEntity;
+import com.grupo12.Voy.common.security.models.RoleEntity;
+import com.grupo12.Voy.common.security.repository.CredentialsRepository;
+import com.grupo12.Voy.common.security.repository.RoleRepository;
 import com.grupo12.Voy.features.parties.Dto.PartyUsersDto;
 import com.grupo12.Voy.features.parties.mapper.PartyMapper;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
@@ -24,8 +29,11 @@ import com.grupo12.Voy.features.users.Dto.UserDto;
 import com.grupo12.Voy.features.users.specification.UserSpecification;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +49,10 @@ public class UsersService implements IUsersService{
     private TicketMapper ticketMapper;
     private ReceiptMapper receiptMapper;
     private PartyMapper partyMapper;
+
+    private RoleRepository roleRepository;
+    private PasswordEncoder passwordEncoder;
+    private CredentialsRepository credentialsRepository;
 
     @Override
     public UserDto findByExternalId(UUID userUuid){
@@ -70,13 +82,29 @@ public class UsersService implements IUsersService{
     }
 
     @Override
-    public UserDto newUser(NewUserDto newUserDto){
-        UserEntity user = newUserDtoMapper.newUserToEntity(newUserDto);
-        if(userRepository.existsByEmail(newUserDto.email()) ||
-                userRepository.existsByUsername(newUserDto.username())){
+    public UserDto newUser(NewUserDto newUserDto) {
+        if (userRepository.existsByEmail(newUserDto.email()) ||
+                userRepository.existsByUsername(newUserDto.username())) {
             throw new EntityDuplicatedException("Usuario duplicado");
         }
-        return userMapper.userToDto(userRepository.save(user));
+
+        UserEntity user = newUserDtoMapper.newUserToEntity(newUserDto);
+        user.setPassword(passwordEncoder.encode(newUserDto.password()));
+        userRepository.save(user);
+
+        RoleEntity defaultRole = roleRepository.findByRole(Roles.ROLE_USER);
+
+        CredentialsEntity credentials = CredentialsEntity.builder()
+                .username(newUserDto.username())
+                .password(user.getPassword())
+                .enabled(true)
+                .usuario(user)
+                .roles(new HashSet<>(Set.of(defaultRole)))
+                .build();
+
+        credentialsRepository.save(credentials);
+
+        return userMapper.userToDto(user);
     }
 
     @Override
