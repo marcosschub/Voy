@@ -17,8 +17,8 @@ public class TagController {
     private final ITagService tagService;
 
     @GetMapping
-    ResponseEntity<List<TagsDTO>> findAll(){
-        return ResponseEntity.ok(tagService.findAll());
+    ResponseEntity<List<TagsDTO>> findAll(@RequestParam(required = false) String name){
+        return ResponseEntity.ok(tagService.findAll(name));
     }
 
     @GetMapping("/{name}")

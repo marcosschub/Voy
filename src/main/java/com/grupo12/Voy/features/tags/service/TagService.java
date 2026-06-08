@@ -8,8 +8,10 @@ import com.grupo12.Voy.features.tags.TagsRepository;
 import com.grupo12.Voy.features.tags.dto.TagsDTO;
 import com.grupo12.Voy.features.tags.mappers.TagMapper;
 import com.grupo12.Voy.features.tags.models.TagEntity;
+import com.grupo12.Voy.features.tags.specification.TagSpecification;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +26,13 @@ public class TagService implements ITagService {
     private TagMapper tagMapper;
 
     @Override
-    public List<TagsDTO> findAll(){
+    public List<TagsDTO> findAll(String name){
+        PredicateSpecification<TagEntity> spec = PredicateSpecification.allOf(
+                TagSpecification.nameLike(name)
+        );
+
         return tagsRepository
-                .findAll()
+                .findAll(spec)
                 .stream()
                 .map(tagMapper::toDto)
                 .toList();

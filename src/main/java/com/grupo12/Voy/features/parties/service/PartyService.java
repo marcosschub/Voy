@@ -7,13 +7,16 @@ import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
 import com.grupo12.Voy.features.parties.repository.PartyRepository;
 import com.grupo12.Voy.features.parties.mapper.PartyMapper;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
+import com.grupo12.Voy.features.parties.specification.PartySpecification;
 import com.grupo12.Voy.features.tags.TagsRepository;
 import com.grupo12.Voy.features.tags.dto.TagsDTO;
 import com.grupo12.Voy.features.tags.mappers.TagMapper;
 import com.grupo12.Voy.features.tags.models.TagEntity;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
+import jakarta.servlet.http.Part;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,8 +32,27 @@ public class PartyService implements IPartyService {
     private final TagMapper tagMapper;
 
     @Override
-    public List<PartyResDTO> getAll() {
-        return partyMapper.toResDTOList(partyRepository.findByLogicStateTrue());
+    public List<PartyResDTO> getAll(
+            UUID partyId,
+            UUID organizerId,
+            String title,
+            Boolean isPublic,
+            String city
+    ) {
+        PredicateSpecification<PartyEntity> spec = PredicateSpecification.allOf(
+                PartySpecification.externalIdEqual(partyId),
+                PartySpecification.externalIdOrganizerEqual(organizerId),
+                PartySpecification.titleContains(title),
+                PartySpecification.isPublic(isPublic),
+                PartySpecification.cityContains(city),
+                PartySpecification.stateTrue()
+        );
+
+        return partyRepository
+                .findAll(spec)
+                .stream()
+                .map(partyMapper::toResDTO)
+                .toList();
     }
 
     @Override
