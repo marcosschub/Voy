@@ -45,7 +45,7 @@ public class PartyService implements IPartyService {
                 PartySpecification.titleContains(title),
                 PartySpecification.isPublic(isPublic),
                 PartySpecification.cityContains(city),
-                PartySpecification.statusTrue()
+                PartySpecification.stateTrue()
         );
 
         return partyRepository

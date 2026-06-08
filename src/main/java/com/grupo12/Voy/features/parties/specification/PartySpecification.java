@@ -36,7 +36,7 @@ public class PartySpecification {
                 cb.like(cb.lower(root.get("city")), "%" + city.toLowerCase() + "%");
     }
 
-    public static PredicateSpecification<PartyEntity> statusTrue(){
-        return ((root,cb) -> cb.isTrue(root.get("status")));
+    public static PredicateSpecification<PartyEntity> stateTrue(){
+        return ((root,cb) -> cb.isTrue(root.get("state")));
     }
 }
