@@ -12,17 +12,11 @@ import java.util.UUID;
 public interface ITicketsService {
     List<TicketResponseDTO> getAll(UUID ticketId, Boolean isConfimed,
                                    String title, String usernameOrganizer, String usernameUser);
-    TicketResponseDTO getByExternalId (UUID id);
-    List<TicketResponseDTO> getByUser(UUID id);
-    List<TicketResponseDTO> getByUserEmail(String email);
     List<TicketResponseDTO> getByParty(UUID partyId);
-    List<TicketResponseDTO> getByUserAndParty(UUID userId,UUID partyId);
-    List<TicketResponseDTO> getByPartyAndConfirmed(UUID partyId);
-    List<TicketResponseDTO> getByPartyAndUnconfirmed(UUID partyIdExt);
-    List<TicketResponseDTO> getByReceipt(UUID receiptExtId);
     TicketAndReceiptDto createTicket(TicketRequestDTO request, ReceiptEntity receipt);
     TicketResponseDTO transferTicket(UUID externalId, UUID oldUserId, UUID newUserExtID);
-    TicketResponseDTO acceptTicket(UUID userExtId, UUID externalId);
+    TicketAndReceiptDto confirmPurchase(UUID receiptExtId);
+    void rejectPurchase(UUID receiptExtId);
     void returnTicket(UUID ticketExtId, UUID userExtId);
     TicketAndReceiptDto purchaseTickets(TicketRequestDTO ticketDTO);
 }

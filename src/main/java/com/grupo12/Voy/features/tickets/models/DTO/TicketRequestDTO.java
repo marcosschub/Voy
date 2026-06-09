@@ -1,10 +1,7 @@
 package com.grupo12.Voy.features.tickets.models.DTO;
 
 import com.grupo12.Voy.features.users.Dto.UserDto;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +17,7 @@ public record TicketRequestDTO (
         String paymentMethod,
         @NotNull
         @Positive(message = "La cantidad debe ser mayor a 0")
+        @Max(value = 5,message = "El maximo permitido es 5 entradas")
         Integer quantity,
         @NotNull (message = "Ingrese el UUID del usuario")
         UUID userIdExternal,

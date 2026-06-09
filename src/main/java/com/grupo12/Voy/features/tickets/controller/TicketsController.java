@@ -19,45 +19,14 @@ public class TicketsController {
     private final ITicketsService ticketsService;
 
     @GetMapping
-    public ResponseEntity<List<TicketResponseDTO>> getAll(@RequestParam(required = false) UUID externalid,
+    public ResponseEntity<List<TicketResponseDTO>> getAll(@RequestParam(required = false) UUID externalId,
                                                           @RequestParam(required = false) Boolean isConfirmed,
                                                           @RequestParam(required = false) String title,
                                                           @RequestParam(required = false) String usernameOrganizer,
                                                           @RequestParam(required = false) String usernameUser
     ){
-        return ResponseEntity.ok(ticketsService.getAll(externalid,isConfirmed,
+        return ResponseEntity.ok(ticketsService.getAll(externalId,isConfirmed,
                 title,usernameOrganizer,usernameUser));
-    }
-
-    @GetMapping("/{externalId}")
-    public ResponseEntity<TicketResponseDTO> getByExternalId(@PathVariable UUID externalId){
-        return ResponseEntity.ok(ticketsService.getByExternalId(externalId));
-    }
-
-    @GetMapping("/filterByUser/{userId}")
-    public ResponseEntity<List<TicketResponseDTO>> getByUser(@PathVariable UUID userId){
-        return ResponseEntity.ok(ticketsService.getByUser(userId));
-    }
-
-    @GetMapping("/filterByParty/{partyId}")
-    public ResponseEntity<List<TicketResponseDTO>> getByParty(@PathVariable UUID partyId){
-        return ResponseEntity.ok(ticketsService.getByParty(partyId));
-    }
-
-    @GetMapping("/{userId}/{partyId}")
-    public ResponseEntity<List<TicketResponseDTO>> getByPartyAndUser(@PathVariable UUID userId,
-                                                                     @PathVariable UUID partyId){
-        return ResponseEntity.ok(ticketsService.getByUserAndParty(userId,partyId));
-    }
-
-    @GetMapping("/confirmedTicketsByParty")
-    public ResponseEntity<List<TicketResponseDTO>> getConfirmedTicketsByParty(@RequestParam UUID partyId){
-        return ResponseEntity.ok(ticketsService.getByPartyAndConfirmed(partyId));
-    }
-
-    @GetMapping("/unconfirmedTicketsByParty")
-    public ResponseEntity<List<TicketResponseDTO>> getUnconfirmedTicketsByParty(@RequestParam UUID partyId){
-        return ResponseEntity.ok(ticketsService.getByPartyAndUnconfirmed(partyId));
     }
 
     @PostMapping
@@ -65,16 +34,29 @@ public class TicketsController {
         return ResponseEntity.ok(ticketsService.purchaseTickets(ticketDTO));
     }
 
-    @PatchMapping("/{userId}/{ticketId}/transferTicket")
+    @PatchMapping("/transferTicket/{userId}/{ticketId}")
     public  ResponseEntity<TicketResponseDTO> transferTicket(@PathVariable UUID userId,
                                                              @PathVariable UUID ticketId,
                                                              @RequestParam UUID newUserExtId){
         return ResponseEntity.ok(ticketsService.transferTicket(ticketId,userId,newUserExtId));
     }
 
-    @PatchMapping("/accept/{userId}")
-    public ResponseEntity<TicketResponseDTO> acceptTicket(@PathVariable UUID userId,
-                                                          @RequestParam UUID ticketId){
-        return ResponseEntity.ok(ticketsService.acceptTicket(userId, ticketId));
+    /// Solo el admin deberia poder entrar a este endpoint
+    @PatchMapping("/confirmTickets/{receiptExtId}")
+    public ResponseEntity<TicketAndReceiptDto> confirmPurchase(@PathVariable UUID receiptExtId){
+        return ResponseEntity.ok(ticketsService.confirmPurchase(receiptExtId));
+    }
+
+    @DeleteMapping("/returnTicket/{userId}/{ticketId}")
+    public ResponseEntity<Void> returnTicket(@PathVariable UUID userId,
+                                             @PathVariable UUID ticketId){
+        ticketsService.returnTicket(userId,ticketId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/rejectPurchase/{receiptId}")
+    public ResponseEntity<Void> rejectPurchase(@PathVariable UUID receiptId){
+        ticketsService.rejectPurchase(receiptId);
+        return ResponseEntity.noContent().build();
     }
 }

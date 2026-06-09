@@ -1,5 +1,6 @@
 package com.grupo12.Voy.features.receipts.models;
 
+import com.grupo12.Voy.features.receipts.Status;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,6 +37,9 @@ public class ReceiptEntity {
 
     @Column(name = "cantidad")
     private Integer quantity;
+
+    @Column(name = "estado")
+    private Status status;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)

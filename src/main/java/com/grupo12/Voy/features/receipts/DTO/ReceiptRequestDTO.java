@@ -17,6 +17,7 @@ public record ReceiptRequestDTO (
     String paymentMethod,
     @NotNull
     @Positive(message = "La cantidad debe ser mayor a 0")
+    @Max(value = 5,message = "El maximo permitido es 5 entradas")
     Integer quantity,
     @NotNull
     UserDto user){
