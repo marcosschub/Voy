@@ -10,11 +10,10 @@ import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.parties.specification.PartySpecification;
 import com.grupo12.Voy.features.tags.TagsRepository;
 import com.grupo12.Voy.features.tags.dto.TagsDTO;
-import com.grupo12.Voy.features.tags.mappers.TagMapper;
 import com.grupo12.Voy.features.tags.models.TagEntity;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
-import jakarta.servlet.http.Part;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class PartyService implements IPartyService {
     private final UserRepository userRepository;
     private final PartyMapper partyMapper;
     private final TagsRepository tagsRepository;
-    private final TagMapper tagMapper;
+
 
     @Override
     public List<PartyResDTO> getAll(
@@ -66,7 +65,7 @@ public class PartyService implements IPartyService {
     public List<PartyResDTO> getByOrganizer(UUID organizerId) {
         List<PartyEntity> parties = partyRepository.findByOrganizerExternalIdAndLogicStateTrue(organizerId);
         if (parties.isEmpty()) {
-            throw new EntityNotFoundException("Evento no encontrado");
+            throw new EntityNotFoundException("No hay eventos para este organizador");
         }
         return partyMapper.toResDTOList(parties);
     }
@@ -100,11 +99,16 @@ public class PartyService implements IPartyService {
         }
         return partyMapper.toResDTOList(parties);
     }
-
+    @Transactional
     @Override
     public PartyResDTO create(PartyReqDTO dto) {
         UserEntity organizer = userRepository.findByExternalId(dto.idOrganizer())
                 .orElseThrow(() -> new EntityNotFoundException("Organizer no encontrado"));
+
+        if(partyRepository.existsByTitle(dto.title())){
+            throw new AlreadyExistsException("Ya existe un evento con ese titulo");
+        }
+
         PartyEntity party = partyMapper.toEntity(dto);
         party.setOrganizer(organizer);
         party.setExternalId(UUID.randomUUID());
