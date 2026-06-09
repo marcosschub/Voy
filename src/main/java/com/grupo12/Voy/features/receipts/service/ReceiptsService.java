@@ -29,12 +29,6 @@ public class ReceiptsService implements IReceiptService {
     private final UserRepository userRepository;
     private final ReceiptMapper receiptMapper;
 
-
-    public ReceiptResponseDTO getById(Long id){
-        return receiptMapper.toResponseDTO(receiptRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo")));
-    }
-
     @Override
     public List<ReceiptResponseDTO> getAll(
             UUID externalId,
