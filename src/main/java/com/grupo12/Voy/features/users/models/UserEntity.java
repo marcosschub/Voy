@@ -1,14 +1,12 @@
 package com.grupo12.Voy.features.users.models;
 
-import com.grupo12.Voy.common.security.enums.Roles;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,21 +31,14 @@ public class UserEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "contraseña",nullable = false)
-    private String password;
+//    @Column(name = "contraseña",nullable = false)
+//    private String password;
 
     @Column(name = "accesibilidad",nullable = false)
     private Boolean accesibilityUser;
 
     @Column(name = "fecha_nacimiento",nullable = false)
-    private Date birthdate;
-
-    @ElementCollection(targetClass = Roles.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "roles_usuario", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private List<Roles> roles = new ArrayList<>();
+    private LocalDate birthdate;
 
     @ManyToMany
     @JoinTable(
@@ -81,6 +72,5 @@ public class UserEntity {
     public void onSave(){
         if(externalId==null) externalId = UUID.randomUUID();
         if(accesibilityUser==null) accesibilityUser = false;
-        if(roles.isEmpty()) roles.add(Roles.ROLE_USER);
     }
 }

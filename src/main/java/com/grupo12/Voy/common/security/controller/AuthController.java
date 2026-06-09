@@ -7,7 +7,6 @@ import com.grupo12.Voy.common.security.service.JwtService;
 import com.grupo12.Voy.features.users.Dto.NewUserDto;
 import com.grupo12.Voy.features.users.Dto.UserDto;
 import com.grupo12.Voy.features.users.Service.IUsersService;
-import com.grupo12.Voy.features.users.Service.UsersService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

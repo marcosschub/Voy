@@ -1,5 +1,6 @@
 package com.grupo12.Voy.common.security.service;
 
+import com.grupo12.Voy.common.security.models.CredentialsEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -36,6 +37,9 @@ public class JwtService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         claims.put("roles", roles);
+        if (userDetails instanceof CredentialsEntity credentials) {
+            claims.put("userId", credentials.getUsuario().getExternalId());
+        }
         return buildToken(claims, userDetails, jwtExpiration);
     }
 

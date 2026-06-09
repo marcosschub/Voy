@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -82,6 +83,7 @@ public class UsersService implements IUsersService{
     }
 
     @Override
+    @Transactional
     public UserDto newUser(NewUserDto newUserDto) {
         if (userRepository.existsByEmail(newUserDto.email()) ||
                 userRepository.existsByUsername(newUserDto.username())) {
@@ -89,22 +91,22 @@ public class UsersService implements IUsersService{
         }
 
         UserEntity user = newUserDtoMapper.newUserToEntity(newUserDto);
-        user.setPassword(passwordEncoder.encode(newUserDto.password()));
-        userRepository.save(user);
+
+        UserEntity userEntity = userRepository.save(user);
 
         RoleEntity defaultRole = roleRepository.findByRole(Roles.ROLE_USER);
 
         CredentialsEntity credentials = CredentialsEntity.builder()
                 .username(newUserDto.username())
-                .password(user.getPassword())
                 .enabled(true)
-                .usuario(user)
+                .usuario(userEntity)
                 .roles(new HashSet<>(Set.of(defaultRole)))
+                .password(passwordEncoder.encode(newUserDto.password()))
                 .build();
 
         credentialsRepository.save(credentials);
 
-        return userMapper.userToDto(user);
+        return userMapper.userToDto(userEntity);
     }
 
     @Override
@@ -112,7 +114,6 @@ public class UsersService implements IUsersService{
     public UserUpdateDto updateUser(UUID userUuid, UserUpdateDto userUpdateDto){
        UserEntity user = getUser(userUuid);
        user.setUsername(userUpdateDto.username());
-       user.setPassword(userUpdateDto.password());
        return userUpdateMapper.toDto(userRepository.save(user));
     }
 
