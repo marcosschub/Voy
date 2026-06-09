@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,9 @@ public class PartyEntity {
 
     @Column(name = "titulo", nullable = false,unique = true)
     private String title;
+
+    @Column(name = "precio",nullable = false)
+    private BigDecimal price;
 
     @Column(name = "tipo")
     @ColumnDefault("False")

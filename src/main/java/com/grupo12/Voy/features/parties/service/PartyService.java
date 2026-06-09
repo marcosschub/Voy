@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -110,6 +111,12 @@ public class PartyService implements IPartyService {
         }
 
         PartyEntity party = partyMapper.toEntity(dto);
+        if(party.getPartyAccesibility()){
+            party.setPrice(BigDecimal.ZERO);
+        }else {
+            party.setPrice(dto.price());
+        }
+
         party.setOrganizer(organizer);
         party.setExternalId(UUID.randomUUID());
 
@@ -154,6 +161,11 @@ public class PartyService implements IPartyService {
         PartyEntity party = partyRepository.findByExternalIdAndLogicStateTrue(idExternal)
                         .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
 
+        if(party.getPartyAccesibility()){
+            party.setPrice(BigDecimal.ZERO);
+        }else {
+            party.setPrice(dto.price());
+        }
         party.setTitle(dto.title());
         party.setCity(dto.city());
         party.setAdress(dto.adress());
