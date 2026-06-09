@@ -30,6 +30,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -170,10 +171,14 @@ public class TicketsService  implements ITicketsService{
         if (ticketDTO.quantity() > available){
             throw new ExceededAmountException("Solo quedan "+ available + "entradas disponibles");
         }
-        ReceiptRequestDTO receiptDTO = new ReceiptRequestDTO(ticketDTO.price(),
-                                                            ticketDTO.paymentMethod(),
-                                                            ticketDTO.quantity(),
-                                                    usersService.findByExternalId(ticketDTO.userIdExternal()));
+        PartyEntity party = partyRepository.findByExternalIdAndLogicStateTrue(ticketDTO.partyIdExternal())
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el evento buscado"));
+        BigDecimal price = party.getPrice();
+        ReceiptRequestDTO receiptDTO = new ReceiptRequestDTO(
+                price,
+                ticketDTO.paymentMethod(),
+                ticketDTO.quantity(),
+                usersService.findByExternalId(ticketDTO.userIdExternal()));
         ReceiptResponseDTO receipt = receiptService.createReceipt(receiptDTO);
         ReceiptEntity receiptEntity = receiptRepository.findByExternalId(receipt.externalId())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
