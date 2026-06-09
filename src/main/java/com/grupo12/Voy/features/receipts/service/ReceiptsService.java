@@ -68,10 +68,10 @@ public class ReceiptsService implements IReceiptService {
                 .findByEmail(dto.user().email())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el usuario"));
         ReceiptEntity receipt = receiptMapper.toEntity(dto);
-        if (dto.price().doubleValue() > 0.0 ){
-            receipt.setStatus(Status.PENDIENTE);
-        }else{
+        if (dto.price().doubleValue() == 0.0 ){
             receipt.setStatus(Status.APROBADA);
+        }else{
+            receipt.setStatus(Status.PENDIENTE);
         }
         receipt.setFinalPrice(receipt.getPrice().multiply(BigDecimal.valueOf(receipt.getQuantity())));
         receipt.setPaymentDate(LocalDateTime.now());
