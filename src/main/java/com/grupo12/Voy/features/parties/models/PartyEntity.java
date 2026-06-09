@@ -59,8 +59,8 @@ public class PartyEntity {
     @Column(name = "descripcion", columnDefinition = "TEXT")
     private String description;
 
-    @ManyToMany(mappedBy = "myParties")
-    private List<UserEntity> usersList;
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<TicketEntity> usersList;
 
     private LocalDateTime dateTime;
 

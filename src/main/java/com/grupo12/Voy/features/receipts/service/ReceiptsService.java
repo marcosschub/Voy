@@ -8,6 +8,7 @@ import com.grupo12.Voy.features.receipts.DTO.ReceiptRequestDTO;
 import com.grupo12.Voy.features.receipts.ReceiptRepository;
 import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.receipts.ReceiptMapper;
+import com.grupo12.Voy.features.receipts.specification.ReceiptSpecification;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
 import com.grupo12.Voy.features.tickets.service.TicketsService;
@@ -18,8 +19,11 @@ import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,8 +39,31 @@ public class ReceiptsService implements IReceiptService {
     private final TicketsService ticketsService;
     private final PartyService partyService;
 
-    public List<ReceiptResponseDTO> getAll(){
-        return receiptRepository.findAll().stream().map(receiptMapper::toResponseDTO).toList();
+    @Override
+    public List<ReceiptResponseDTO> getAll(
+            UUID externalId,
+            String paymentMethod,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            BigDecimal minFinalPrice,
+            BigDecimal maxFinalPrice,
+            LocalDateTime from,
+            LocalDateTime to,
+            Integer minQuantity,
+            Integer maxQuantity) {
+
+        PredicateSpecification<ReceiptEntity> spec = ReceiptSpecification.externalIdEqual(externalId)
+                .and(ReceiptSpecification.paymentMethodContains(paymentMethod))
+                .and(ReceiptSpecification.priceBetween(minPrice, maxPrice))
+                .and(ReceiptSpecification.finalPriceBetween(minFinalPrice, maxFinalPrice))
+                .and(ReceiptSpecification.paymentDateBetween(from, to))
+                .and(ReceiptSpecification.quantityBetween(minQuantity, maxQuantity));
+
+        return receiptRepository
+                .findAll(spec)
+                .stream()
+                .map(receiptMapper::toResponseDTO)
+                .toList();
     }
 
     public ReceiptResponseDTO getById(Long id){

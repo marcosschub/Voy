@@ -23,8 +23,13 @@ public class PartiesController  {
     private final IPartyService partyService;
 
     @GetMapping
-    public ResponseEntity<List<PartyResDTO>> findAll() {
-        return ResponseEntity.ok(partyService.getAll());
+    public ResponseEntity<List<PartyResDTO>> findAll(@RequestParam(required = false) UUID partyId,
+                                                     @RequestParam(required = false) UUID organizerId,
+                                                     @RequestParam(required = false) String title,
+                                                     @RequestParam(required = false) Boolean isPublic,
+                                                     @RequestParam(required = false) String city
+    ) {
+        return ResponseEntity.ok(partyService.getAll(partyId,organizerId,title,isPublic,city));
     }
 
     @GetMapping("/{id}")

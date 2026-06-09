@@ -18,6 +18,17 @@ import java.util.UUID;
 public class TicketsController {
     private final ITicketsService ticketsService;
 
+    @GetMapping
+    public ResponseEntity<List<TicketResponseDTO>> getAll(@RequestParam(required = false) UUID externalid,
+                                                          @RequestParam(required = false) Boolean isConfirmed,
+                                                          @RequestParam(required = false) String title,
+                                                          @RequestParam(required = false) String usernameOrganizer,
+                                                          @RequestParam(required = false) String usernameUser
+    ){
+        return ResponseEntity.ok(ticketsService.getAll(externalid,isConfirmed,
+                title,usernameOrganizer,usernameUser));
+    }
+
     @GetMapping("/{externalId}")
     public ResponseEntity<TicketResponseDTO> getByExternalId(@PathVariable UUID externalId){
         return ResponseEntity.ok(ticketsService.getByExternalId(externalId));
