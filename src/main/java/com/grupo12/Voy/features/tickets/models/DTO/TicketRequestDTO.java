@@ -10,12 +10,12 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record TicketRequestDTO (
-        @NotNull
+        @NotNull(message = "Debe ingresar el precio, para eventos gratis ingrese el 0")
         @PositiveOrZero(message = "El monto debe ser 0 o positivo")
         BigDecimal price,
         @NotBlank(message = "Ingrese el metodo de pago")
         String paymentMethod,
-        @NotNull
+        @NotNull(message = "La cantidad no puede estar vacia, debe ser mayor a 0 y menor a 5")
         @Positive(message = "La cantidad debe ser mayor a 0")
         @Max(value = 5,message = "El maximo permitido es 5 entradas")
         Integer quantity,
