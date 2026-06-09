@@ -1,17 +1,26 @@
 package com.grupo12.Voy.features.tickets.models.DTO;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import com.grupo12.Voy.features.users.Dto.UserDto;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public record TicketRequestDTO (
-    @NotNull (message = "Ingrese el UUID del usuario")
-    UUID userIdExternal,
-    @NotNull (message = "Ingrese el UUID de la fiesta")
-    UUID partyIdExternal,
-    @NotNull (message = "Ingrese el UUID del recibo")
-    UUID receiptExternalId){
+        @NotNull(message = "Debe ingresar el precio, para eventos gratis ingrese el 0")
+        @PositiveOrZero(message = "El monto debe ser 0 o positivo")
+        BigDecimal price,
+        @NotBlank(message = "Ingrese el metodo de pago")
+        String paymentMethod,
+        @NotNull(message = "La cantidad no puede estar vacia, debe ser mayor a 0 y menor a 5")
+        @Positive(message = "La cantidad debe ser mayor a 0")
+        @Max(value = 5,message = "El maximo permitido es 5 entradas")
+        Integer quantity,
+        @NotNull (message = "Ingrese el UUID del usuario")
+        UUID userIdExternal,
+        @NotNull (message = "Ingrese el UUID de la fiesta")
+        UUID partyIdExternal){
 }

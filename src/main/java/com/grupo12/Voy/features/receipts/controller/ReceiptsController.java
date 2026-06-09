@@ -3,6 +3,7 @@ package com.grupo12.Voy.features.receipts.controller;
 import com.grupo12.Voy.features.receipts.DTO.ReceiptRequestDTO;
 import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
 import com.grupo12.Voy.features.receipts.service.IReceiptService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -40,28 +41,10 @@ public class ReceiptsController {
                 from, to,
                 minQuantity, maxQuantity));
     }
-    @GetMapping("/{receiptExtId}")
-    ResponseEntity<ReceiptResponseDTO> getByExternalId(@PathVariable UUID receiptExtId){
-        return ResponseEntity.ok(receiptsService.getByExternalId(receiptExtId));
-    }
-
-    @GetMapping("/{userExtId}")
-    ResponseEntity<List<ReceiptResponseDTO>> getByUser(@PathVariable UUID userExtId){
-        return ResponseEntity.ok(receiptsService.getByUser(userExtId));
-    }
-
-    @GetMapping("/filter/{paymentMethod}")
-    ResponseEntity<List<ReceiptResponseDTO>> getByPaymentMethod(@PathVariable String paymentMethod){
-        return ResponseEntity.ok(receiptsService.getByPaymentMethod(paymentMethod));
-    }
 
     @PostMapping
-    ResponseEntity<ReceiptResponseDTO> createReceipt(@RequestBody ReceiptRequestDTO request){
-        if(request == null){
-            return ResponseEntity.badRequest().build();
-        }else {
-            return ResponseEntity.ok(receiptsService.createReceipt(request));
-        }
+    ResponseEntity<ReceiptResponseDTO> createReceipt(@RequestBody @Valid ReceiptRequestDTO request){
+        return ResponseEntity.ok(receiptsService.createReceipt(request));
     }
 
     @DeleteMapping("/{receiptExtId}/{userExtId}")
@@ -70,4 +53,5 @@ public class ReceiptsController {
         receiptsService.deleteReceipt(receiptExtId,userExtId);
         return ResponseEntity.noContent().build();
     }
+
 }

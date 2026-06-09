@@ -10,14 +10,15 @@ import lombok.Setter;
 import java.math.BigDecimal;
 
 public record ReceiptRequestDTO (
-    @NotNull
+    @NotNull(message = "Ingrese el precio, puede ser 0 o mayor")
     @PositiveOrZero(message = "El monto debe ser 0 o positivo")
     BigDecimal price,
     @NotBlank (message = "Ingrese el metodo de pago")
     String paymentMethod,
-    @NotNull
+    @NotNull(message = "El campo cantidad no puede estar vacio")
     @Positive(message = "La cantidad debe ser mayor a 0")
+    @Max(value = 5,message = "El maximo permitido es 5 entradas")
     Integer quantity,
-    @NotNull
+    @NotNull(message = "Ingrese el UUID del usuario")
     UserDto user){
 }
