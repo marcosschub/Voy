@@ -3,6 +3,7 @@ package com.grupo12.Voy.features.parties.Dto;
 import com.grupo12.Voy.features.tags.dto.TagsDTO;
 import jakarta.validation.constraints.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,9 @@ public record PartyReqDTO(
         String city,
         @NotBlank(message = "La direccion es obligatoria")
         String adress,
+        @NotNull(message = "El valor no puede ser nulo")
+        @PositiveOrZero(message = "El precio debe ser positivo")
+        BigDecimal price,
         @Future(message = "La fecha es obligatoria")
         LocalDateTime dateTime,
         @NotNull(message = "El limite de invitados no puede ser nulo")
