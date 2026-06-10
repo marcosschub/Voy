@@ -58,6 +58,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
+                List<GrantedAuthority> authorities = jwtService.extractAuthorities(jwt);
+
+                // ↓ LOGS TEMPORALES - borrar después
+                System.out.println(">>> isTokenValid: true");
+                System.out.println(">>> Authorities del TOKEN: " + authorities);
+                System.out.println(">>> Authorities del USER: " + userDetails.getAuthorities());
+
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        authorities
+                );
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                System.out.println(">>> Authentication seteado: " + SecurityContextHolder.getContext().getAuthentication());
+
+            } else {
+                // ↓ Si entra acá, el token no pasa la validación
+                System.out.println(">>> isTokenValid: FALSE");
+                System.out.println(">>> username del token: " + username);
+                System.out.println(">>> isEnabled: " + userDetails.isEnabled());
+                System.out.println(">>> isAccountNonLocked: " + userDetails.isAccountNonLocked());
+            }
+
+            filterChain.doFilter(request, response);
+
+            if (jwtService.isTokenValid(jwt, userDetails)) {
                 // Roles tomados del token directamente
                 List<GrantedAuthority> authorities = jwtService.extractAuthorities(jwt);
 
@@ -71,6 +99,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        filterChain.doFilter(request, response);
     }
+
+
 }

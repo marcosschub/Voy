@@ -1,8 +1,5 @@
 package com.grupo12.Voy.common.security;
 
-
-
-
 import com.grupo12.Voy.common.security.enums.Permits;
 import com.grupo12.Voy.common.security.enums.Roles;
 import com.grupo12.Voy.common.security.models.CredentialsEntity;
