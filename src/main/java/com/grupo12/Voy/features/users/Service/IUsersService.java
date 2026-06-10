@@ -26,4 +26,5 @@ public interface IUsersService {
     List<PartyUsersDto> alterFollowParty(UUID userId, UUID partyId);
     List<TicketUsersDto> listTickets(UUID userUuid);
     List<ReceiptResponseDTO> listReceipt(UUID userUuid);
+    UserDto userToPublic (UUID idUser);
 }

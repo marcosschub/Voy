@@ -1,5 +1,6 @@
 package com.grupo12.Voy.features.users.models;
 
+import com.grupo12.Voy.common.security.models.CredentialsEntity;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
 import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
@@ -30,9 +31,6 @@ public class UserEntity {
 
     @Column(nullable = false, unique = true)
     private String email;
-
-//    @Column(name = "contraseña",nullable = false)
-//    private String password;
 
     @Column(name = "accesibilidad",nullable = false)
     private Boolean accesibilityUser;
@@ -68,9 +66,13 @@ public class UserEntity {
     @OneToMany(fetch = FetchType.LAZY)
     private List<ReceiptEntity> myReceipts;
 
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CredentialsEntity credentials;
+
     @PrePersist
     public void onSave(){
         if(externalId==null) externalId = UUID.randomUUID();
         if(accesibilityUser==null) accesibilityUser = false;
     }
+
 }
