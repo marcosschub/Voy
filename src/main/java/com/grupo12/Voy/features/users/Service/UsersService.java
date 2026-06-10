@@ -185,10 +185,20 @@ public class UsersService implements IUsersService{
         return user.getMyReceipts().stream().map(receiptMapper::toResponseDTO).toList();
     }
 
+    @Override
+    public UserDto userToPublic(UUID userId){
+        UserEntity user = userRepository
+                .findByExternalId(userId)
+                .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado"));
+        user.setAccesibilityUser(true);
+        return userMapper.userToDto(userRepository.save(user));
+    }
 
     private UserEntity getUser(UUID userId){
         return userRepository
                 .findByExternalId(userId)
                 .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado"));
     }
+
+
 }
