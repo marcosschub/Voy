@@ -36,13 +36,13 @@ public class PartiesController  {
 
     /// crea nuevo evento
     @PostMapping("/public")
-    @PreAuthorize("hasRole('ROLE_ORGANIZATOR')")
+    @PreAuthorize("hasRole('ORGANIZATOR')")
     public ResponseEntity<PartyResDTO> createPublic(@RequestBody @Valid PartyReqDTO party) {
         return ResponseEntity.status(HttpStatus.CREATED).body(partyService.createPublic(party));
     }
 
     @PostMapping("/private")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<PartyResDTO> createPrivate(@RequestBody @Valid PartyReqPrivateDto party) {
         return ResponseEntity.status(HttpStatus.CREATED).body(partyService.createPrivate(party));
     }
