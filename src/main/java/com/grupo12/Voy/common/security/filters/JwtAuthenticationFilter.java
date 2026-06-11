@@ -1,12 +1,10 @@
 package com.grupo12.Voy.common.security.filters;
 
 import com.grupo12.Voy.common.security.service.JwtService;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -82,23 +80,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println(">>> isEnabled: " + userDetails.isEnabled());
                 System.out.println(">>> isAccountNonLocked: " + userDetails.isAccountNonLocked());
             }
-
-            filterChain.doFilter(request, response);
-
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                // Roles tomados del token directamente
-                List<GrantedAuthority> authorities = jwtService.extractAuthorities(jwt);
-
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        authorities
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
         }
-
+        filterChain.doFilter(request, response);
     }
 
 

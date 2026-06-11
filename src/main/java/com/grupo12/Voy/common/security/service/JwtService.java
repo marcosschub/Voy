@@ -40,7 +40,11 @@ public class JwtService {
         if (userDetails instanceof CredentialsEntity credentials) {
             claims.put("userId", credentials.getUsuario().getExternalId());
         }
-        return buildToken(claims, userDetails, jwtExpiration);
+        //return buildToken(claims, userDetails, jwtExpiration);
+        String token = buildToken(claims, userDetails, jwtExpiration);
+        System.out.println("Token generado en: {}" + new Date(System.currentTimeMillis()));
+        System.out.println("Token expira en: {}" + new Date(System.currentTimeMillis() + jwtExpiration));
+        return token;
     }
 
     public List<GrantedAuthority> extractAuthorities(String token) {
