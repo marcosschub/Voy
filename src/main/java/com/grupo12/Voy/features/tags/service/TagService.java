@@ -39,15 +39,6 @@ public class TagService implements ITagService {
     }
 
     @Override
-    public TagsDTO findByName(String name){
-        TagEntity tag = tagsRepository
-                .findByName(name.toUpperCase())
-                .orElseThrow(() -> new EntityNotFoundException("Etiqueta no encontrada"));
-        return tagMapper.toDto(tag);
-    }
-
-    @Override
-    @Transactional
     public TagsDTO save(TagsDTO tagsDTO){
         if(tagsRepository
                 .findAll()
@@ -61,7 +52,6 @@ public class TagService implements ITagService {
     }
 
     @Override
-    @Transactional
     public TagsDTO update(String oldname, TagsDTO tagsDTO){
         TagEntity tag = tagsRepository
                 .findByName(oldname)
@@ -71,7 +61,6 @@ public class TagService implements ITagService {
     }
 
     @Override
-    @Transactional
     public void delete(TagsDTO tagsDTO){
         TagEntity tag = tagsRepository
                 .findByName(tagsDTO.name())

@@ -7,8 +7,6 @@ import java.util.List;
 public interface ITagService {
     List<TagsDTO> findAll(String name);
 
-    TagsDTO findByName(String name);
-
     TagsDTO save(TagsDTO tagsDTO);
 
     TagsDTO update(String oldName, TagsDTO tagsDTO);
