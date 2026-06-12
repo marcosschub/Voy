@@ -57,61 +57,58 @@ public class UserController {
         return new ResponseEntity<>(userService.newUser(newUserDto),HttpStatus.CREATED);
     }
 
-    @PutMapping("/{idExternal}/update")
-    @PreAuthorize("hasRole('ADMIN') or #idExternal == authentication.principal.userId")
-    ResponseEntity<UserUpdateDto> updateUser(@PathVariable UUID idExternal,
+    @PutMapping("/update")
+    @PreAuthorize("hasRole('USER')")
+    ResponseEntity<UserUpdateDto> updateUser(@AuthenticationPrincipal(expression = "usuario.externalId") UUID idExternal,
                                              @RequestBody @Valid UserUpdateDto userUpdateDto){
         return ResponseEntity.ok(userService.updateUser(idExternal, userUpdateDto));
     }
 
 
-
-    @GetMapping("/{idExternal}/follows")
+    @GetMapping("/follows")
     @PreAuthorize("hasRole('USER')")
-    ResponseEntity<List<UserFollowDto>> listFollowList(@PathVariable UUID idExternal){
+    ResponseEntity<List<UserFollowDto>> listFollowList(@AuthenticationPrincipal(expression = "usuario.externalId") UUID idExternal){
         return ResponseEntity.ok(userService.listFollowList(idExternal));
     }
 
-    @PatchMapping("/{idUser}/follow/user/{idOtherUser}")
+    @PatchMapping("/follow/user/{idOtherUser}")
     @PreAuthorize("hasRole('USER')")
-    ResponseEntity<List<UserFollowDto>> alterFollowUser(@PathVariable UUID idUser,@PathVariable UUID idOtherUser){
+    ResponseEntity<List<UserFollowDto>> alterFollowUser(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idUser,
+                                                        @PathVariable UUID idOtherUser){
         return ResponseEntity.ok(userService.alterFollow(idUser,idOtherUser));
     }
 
-    @GetMapping("/{idExternal}/followers")
+    @GetMapping("/followers")
     @PreAuthorize("hasRole('USER')")
-    ResponseEntity<List<UserFollowDto>> listFollowersList(@PathVariable UUID idExternal){
+    ResponseEntity<List<UserFollowDto>> listFollowersList(@AuthenticationPrincipal(expression = "usuario.externalId") UUID idExternal){
        return ResponseEntity.ok(userService.listFollowersList(idExternal));
     }
 
-    @GetMapping("/{idExternal}/myParties")
+    @GetMapping("/myParties")
     @PreAuthorize("hasRole('USER')")
-    ResponseEntity<List<PartyUsersDto>> listMyParties(@PathVariable UUID idExternal){
+    ResponseEntity<List<PartyUsersDto>> listMyParties(@AuthenticationPrincipal(expression = "usuario.externalId") UUID idExternal){
         return ResponseEntity.ok(userService.listMyParties(idExternal));
     }
 
-    @GetMapping("/{idExternal}/followParties")
+    @GetMapping("/followParties")
     @PreAuthorize("hasRole('USER')")
-    ResponseEntity<List<PartyUsersDto>> listFollowedParties(@PathVariable UUID idExternal){
+    ResponseEntity<List<PartyUsersDto>> listFollowedParties(@AuthenticationPrincipal(expression = "usuario.externalId") UUID idExternal){
         return ResponseEntity.ok((userService.listFollowedParties(idExternal)));
     }
 
-    @PatchMapping("/{idExternal}/follow/party/{idParty}")
-    @PreAuthorize("#idExternal == authentication.principal.userId")
-    ResponseEntity<List<PartyUsersDto>> alterFollowParty(@PathVariable UUID idExternal,
+    @PatchMapping("/follow/party/{idParty}")
+    ResponseEntity<List<PartyUsersDto>> alterFollowParty(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idExternal,
                                                          @PathVariable UUID idParty){
         return ResponseEntity.ok(userService.alterFollowParty(idExternal,idParty));
     }
 
-    @GetMapping("/{idExternal}/myTickets")
-    @PreAuthorize("#idExternal == authentication.principal.userId")
-    ResponseEntity<List<TicketUsersDto>> listMyTickets(@PathVariable UUID idExternal){
+    @GetMapping("/myTickets")
+    ResponseEntity<List<TicketUsersDto>> listMyTickets(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idExternal){
         return ResponseEntity.ok((userService.listTickets(idExternal)));
     }
 
-    @GetMapping("/{idExternal}/myReceipts")
-    @PreAuthorize("#idExternal == authentication.principal.userId")
-    ResponseEntity<List<ReceiptResponseDTO>> listMyReceipts(@PathVariable UUID idExternal){
+    @GetMapping("/myReceipts")
+    ResponseEntity<List<ReceiptResponseDTO>> listMyReceipts(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idExternal){
         return ResponseEntity.ok((userService.listReceipt(idExternal)));
     }
 
