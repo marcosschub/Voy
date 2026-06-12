@@ -105,6 +105,7 @@ public class PartiesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(partyService.createPublic(party,currentUserId));
     }
 
+
     @Operation(summary = "Crear evento privado (Usuario)", description = """
             Crea un nuevo evento privado y gratuito. El organizador se obtiene del token JWT.
             El precio se establece automáticamente en 0 y la accesibilidad en privado.
