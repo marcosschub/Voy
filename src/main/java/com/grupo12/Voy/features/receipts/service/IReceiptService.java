@@ -11,8 +11,14 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IReceiptService {
+    List<ReceiptResponseDTO> getAllAdmin(
+            UUID externalId, UUID userExtId,String paymentMethod,
+            BigDecimal minPrice, BigDecimal maxPrice,
+            BigDecimal minFinalPrice, BigDecimal maxFinalPrice,
+            LocalDateTime from, LocalDateTime to,
+            Integer minQuantity, Integer maxQuantity);
     List<ReceiptResponseDTO> getAll(
-            UUID externalId, String paymentMethod,
+            UUID externalId, UUID userExtId,String paymentMethod,
             BigDecimal minPrice, BigDecimal maxPrice,
             BigDecimal minFinalPrice, BigDecimal maxFinalPrice,
             LocalDateTime from, LocalDateTime to,

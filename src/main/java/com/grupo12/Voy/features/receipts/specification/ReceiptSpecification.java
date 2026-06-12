@@ -15,6 +15,12 @@ public class ReceiptSpecification {
                 cb.equal(root.get("externalId"), externalId));
     }
 
+    public static PredicateSpecification<ReceiptEntity> userExtIdEqual(UUID userExtId) {
+        return ((root, cb) -> userExtId == null ?
+                cb.conjunction() :
+                cb.equal(root.get("user").get("externalId"), userExtId));
+    }
+
     public static PredicateSpecification<ReceiptEntity> paymentMethodContains(String paymentMethod) {
         return (root, cb) -> paymentMethod == null || paymentMethod.isBlank() ?
                 cb.conjunction() :

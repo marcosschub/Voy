@@ -17,12 +17,12 @@ import com.grupo12.Voy.features.tickets.TicketMapper;
 import com.grupo12.Voy.features.tickets.TicketRepository;
 import com.grupo12.Voy.features.receipts.models.ReceiptEntity;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketAndReceiptDto;
+import com.grupo12.Voy.features.tickets.models.DTO.TicketPrivateRequestDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
 import com.grupo12.Voy.features.tickets.models.TicketEntity;
 import com.grupo12.Voy.features.tickets.specification.TicketSpecification;
 import com.grupo12.Voy.features.users.Mapper.UserMapper;
-import com.grupo12.Voy.features.users.Service.IUsersService;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.transaction.Transactional;
@@ -40,7 +40,7 @@ import java.util.UUID;
 public class TicketsService  implements ITicketsService{
     private final TicketRepository ticketRepository;
     private TicketMapper ticketMapper;
-    private final IUsersService usersService;
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PartyRepository partyRepository;
     private final ReceiptRepository receiptRepository;
@@ -50,7 +50,7 @@ public class TicketsService  implements ITicketsService{
     private final IReceiptService receiptService;
 
     @Override
-    public List<TicketResponseDTO> getAll(UUID ticketId, Boolean isConfimed,
+    public List<TicketResponseDTO> getAllAdmin(UUID ticketId, Boolean isConfimed,
                                           String title, String usernameOrganizer, String usernameUser){
         PredicateSpecification<TicketEntity> spec = PredicateSpecification.allOf(
                 TicketSpecification.externalIdEqual(ticketId),
@@ -58,6 +58,38 @@ public class TicketsService  implements ITicketsService{
                 TicketSpecification.partyTitleContains(title),
                 TicketSpecification.partyOrganizerNameContains(usernameOrganizer),
                 TicketSpecification.userUsernameContains(usernameUser)
+        );
+
+        return ticketRepository.findAll(spec)
+                .stream().map(ticketMapper::toResponseDto).toList();
+    }
+    @Override
+    public List<TicketResponseDTO> getAllOrganizer(UUID ticketId, Boolean isConfimed,
+                                          String title, UUID userExtId, String usernameUser){
+        UserEntity user = userRepository.findByExternalId(userExtId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+        PredicateSpecification<TicketEntity> spec = PredicateSpecification.allOf(
+                TicketSpecification.externalIdEqual(ticketId),
+                TicketSpecification.isConfirmed(isConfimed),
+                TicketSpecification.partyTitleContains(title),
+                TicketSpecification.partyOrganizerNameContains(user.getUsername()),
+                TicketSpecification.userUsernameContains(usernameUser)
+        );
+        return ticketRepository.findAll(spec)
+                .stream().map(ticketMapper::toResponseDto).toList();
+    }
+
+    @Override
+    public List<TicketResponseDTO> getAllUser(UUID ticketId, Boolean isConfimed,
+                                               String title, String usernameOrganizer, UUID userExtId){
+        UserEntity user = userRepository.findByExternalId(userExtId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+        PredicateSpecification<TicketEntity> spec = PredicateSpecification.allOf(
+                TicketSpecification.externalIdEqual(ticketId),
+                TicketSpecification.isConfirmed(isConfimed),
+                TicketSpecification.partyTitleContains(title),
+                TicketSpecification.partyOrganizerNameContains(usernameOrganizer),
+                TicketSpecification.userUsernameContains(user.getUsername())
         );
 
         return ticketRepository.findAll(spec)
@@ -72,8 +104,8 @@ public class TicketsService  implements ITicketsService{
     }
 
     @Transactional
-    public TicketAndReceiptDto createTicket(TicketRequestDTO request,ReceiptEntity receipt){
-        UserEntity user = userRepository.findByExternalId(request.userIdExternal())
+    public TicketAndReceiptDto createTicket(UUID userId,TicketRequestDTO request,ReceiptEntity receipt){
+        UserEntity user = userRepository.findByExternalId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
         PartyEntity party = partyRepository
                 .findByExternalIdAndLogicStateTrue(request.partyIdExternal())
@@ -121,6 +153,9 @@ public class TicketsService  implements ITicketsService{
         ReceiptEntity receipt = receiptRepository.findByExternalId(receiptExtId)
                 .orElseThrow(() -> new EntityNotFoundException("Recibo no encontrado"));
         List<TicketEntity> ticketList = ticketRepository.findByReceiptEntity(receipt);
+        if(ticketList.isEmpty()){
+            throw new EntityNotFoundException("No se encuentran tickets asociados al recibo");
+        }
         receipt.setStatus(Status.APROBADA);
         receiptRepository.save(receipt);
         TicketAndReceiptDto dtoTickets = new TicketAndReceiptDto(receipt.getUser().getExternalId(),
@@ -166,7 +201,7 @@ public class TicketsService  implements ITicketsService{
     }
 
     @Transactional
-    public TicketAndReceiptDto purchaseTickets(TicketRequestDTO ticketDTO){
+    public TicketAndReceiptDto purchaseTickets(UUID userId, TicketRequestDTO ticketDTO){
         int available = partyService.getByExternalId(ticketDTO.partyIdExternal()).guestLimit() - getByParty(ticketDTO.partyIdExternal()).size();
         if (ticketDTO.quantity() > available){
             throw new ExceededAmountException("Solo quedan "+ available + "entradas disponibles");
@@ -174,14 +209,37 @@ public class TicketsService  implements ITicketsService{
         PartyEntity party = partyRepository.findByExternalIdAndLogicStateTrue(ticketDTO.partyIdExternal())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el evento buscado"));
         BigDecimal price = party.getPrice();
+        UserEntity user = userRepository.findByExternalId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
         ReceiptRequestDTO receiptDTO = new ReceiptRequestDTO(
                 price,
                 ticketDTO.paymentMethod(),
                 ticketDTO.quantity(),
-                usersService.findByExternalId(ticketDTO.userIdExternal()));
+                userMapper.userToDto(user));
         ReceiptResponseDTO receipt = receiptService.createReceipt(receiptDTO);
         ReceiptEntity receiptEntity = receiptRepository.findByExternalId(receipt.externalId())
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
-        return createTicket(ticketDTO,receiptEntity);
+        return createTicket(userId,ticketDTO,receiptEntity);
+    }
+
+    @Transactional
+    public TicketAndReceiptDto getTicketsPrivate(UUID userId, TicketPrivateRequestDTO ticketDTO){
+        int available = partyService.getByExternalId(ticketDTO.partyIdExternal()).guestLimit() - getByParty(ticketDTO.partyIdExternal()).size();
+        if (ticketDTO.quantity() > available){
+            throw new ExceededAmountException("Solo quedan "+ available + "entradas disponibles");
+        }
+        PartyEntity party = partyRepository.findByExternalIdAndLogicStateTrue(ticketDTO.partyIdExternal())
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el evento buscado"));
+        UserEntity user = userRepository.findByExternalId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+        ReceiptRequestDTO receiptDTO = new ReceiptRequestDTO(
+                BigDecimal.ZERO,
+                "Gratis",
+                ticketDTO.quantity(),
+                userMapper.userToDto(user));
+        ReceiptResponseDTO receipt = receiptService.createReceipt(receiptDTO);
+        ReceiptEntity receiptEntity = receiptRepository.findByExternalId(receipt.externalId())
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
+        return createTicket(userId,ticketMapper.toRequestDto(ticketDTO),receiptEntity);
     }
 }

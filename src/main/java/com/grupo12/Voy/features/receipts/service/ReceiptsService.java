@@ -30,8 +30,9 @@ public class ReceiptsService implements IReceiptService {
     private final ReceiptMapper receiptMapper;
 
     @Override
-    public List<ReceiptResponseDTO> getAll(
+    public List<ReceiptResponseDTO> getAllAdmin(
             UUID externalId,
+            UUID userExtId,
             String paymentMethod,
             BigDecimal minPrice,
             BigDecimal maxPrice,
@@ -43,6 +44,36 @@ public class ReceiptsService implements IReceiptService {
             Integer maxQuantity) {
 
         PredicateSpecification<ReceiptEntity> spec = ReceiptSpecification.externalIdEqual(externalId)
+                .and(ReceiptSpecification.userExtIdEqual(userExtId))
+                .and(ReceiptSpecification.paymentMethodContains(paymentMethod))
+                .and(ReceiptSpecification.priceBetween(minPrice, maxPrice))
+                .and(ReceiptSpecification.finalPriceBetween(minFinalPrice, maxFinalPrice))
+                .and(ReceiptSpecification.paymentDateBetween(from, to))
+                .and(ReceiptSpecification.quantityBetween(minQuantity, maxQuantity));
+
+        return receiptRepository
+                .findAll(spec)
+                .stream()
+                .map(receiptMapper::toResponseDTO)
+                .toList();
+    }
+
+    @Override
+    public List<ReceiptResponseDTO> getAll(
+            UUID externalId,
+            UUID userExtId,
+            String paymentMethod,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            BigDecimal minFinalPrice,
+            BigDecimal maxFinalPrice,
+            LocalDateTime from,
+            LocalDateTime to,
+            Integer minQuantity,
+            Integer maxQuantity) {
+
+        PredicateSpecification<ReceiptEntity> spec = ReceiptSpecification.externalIdEqual(externalId)
+                .and(ReceiptSpecification.userExtIdEqual(userExtId))
                 .and(ReceiptSpecification.paymentMethodContains(paymentMethod))
                 .and(ReceiptSpecification.priceBetween(minPrice, maxPrice))
                 .and(ReceiptSpecification.finalPriceBetween(minFinalPrice, maxFinalPrice))
