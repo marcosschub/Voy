@@ -1,7 +1,6 @@
 package com.grupo12.Voy.features.users.Controller;
 
 
-import com.grupo12.Voy.common.security.models.CredentialsEntity;
 import com.grupo12.Voy.features.parties.Dto.PartyUsersDto;
 import com.grupo12.Voy.features.receipts.DTO.ReceiptResponseDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketUsersDto;
