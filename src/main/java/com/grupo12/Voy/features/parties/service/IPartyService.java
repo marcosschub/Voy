@@ -9,13 +9,14 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IPartyService {
-    List<PartyResDTO> getAll(UUID partyId, UUID organizerId, String title, Boolean isPublic, String city);
+    List<PartyResDTO> getAll(UUID partyId, UUID organizerId, String title, Boolean isPublic, String city, UUID currentUserId); // 👈 agregás currentUserId
 
     PartyResDTO getByExternalId(UUID id);
+    PartyResDTO getById(UUID id, UUID currentUserId);
 
-    PartyResDTO createPublic(PartyReqDTO dto);
+    PartyResDTO createPublic(PartyReqDTO dto, UUID currentUserId);
 
-    PartyResDTO createPrivate(PartyReqPrivateDto dto);
+    PartyResDTO createPrivate(PartyReqPrivateDto dto, UUID currentUserId);
 
     PartyResDTO update(UUID idExternal, PartyReqDTO dto);
 

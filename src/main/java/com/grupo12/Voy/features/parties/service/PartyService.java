@@ -2,6 +2,7 @@ package com.grupo12.Voy.features.parties.service;
 
 import com.grupo12.Voy.common.exceptions.AlreadyExistsException;
 import com.grupo12.Voy.common.exceptions.EntityNotFoundException;
+import com.grupo12.Voy.common.exceptions.NotAllowedException;
 import com.grupo12.Voy.features.parties.Dto.PartyReqDTO;
 import com.grupo12.Voy.features.parties.Dto.PartyReqPrivateDto;
 import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
@@ -17,6 +18,7 @@ import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.PredicateSpecification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -33,13 +35,8 @@ public class PartyService implements IPartyService {
 
 
     @Override
-    public List<PartyResDTO> getAll(
-            UUID partyId,
-            UUID organizerId,
-            String title,
-            Boolean isPublic,
-            String city
-    ) {
+    public List<PartyResDTO> getAll(UUID partyId, UUID organizerId, String title,
+                                    Boolean isPublic, String city, UUID currentUserId) {
         PredicateSpecification<PartyEntity> spec = PredicateSpecification.allOf(
                 PartySpecification.externalIdEqual(partyId),
                 PartySpecification.externalIdOrganizerEqual(organizerId),
@@ -52,6 +49,7 @@ public class PartyService implements IPartyService {
         return partyRepository
                 .findAll(spec)
                 .stream()
+                .filter(p -> canView(p, currentUserId))
                 .map(partyMapper::toResDTO)
                 .toList();
     }
@@ -63,10 +61,22 @@ public class PartyService implements IPartyService {
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
     }
 
+    @Override
+    public PartyResDTO getById(UUID id, UUID currentUserId) {
+        PartyEntity party = partyRepository.findByExternalIdAndLogicStateTrue(id)
+                .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
+
+        if (!canView(party, currentUserId)) {
+            throw new NotAllowedException("No tenés acceso a este evento");
+        }
+
+        return partyMapper.toResDTO(party);
+    }
+
     @Transactional
     @Override
-    public PartyResDTO createPrivate(PartyReqPrivateDto dto) {
-        UserEntity organizer = userRepository.findByExternalId(dto.idOrganizer())
+    public PartyResDTO createPrivate(PartyReqPrivateDto dto, UUID currentUserId) {
+        UserEntity organizer = userRepository.findByExternalId(currentUserId)
                 .orElseThrow(() -> new EntityNotFoundException("Organizer no encontrado"));
 
         if (partyRepository.existsByTitle(dto.title())) {
@@ -84,8 +94,8 @@ public class PartyService implements IPartyService {
 
     @Transactional
     @Override
-    public PartyResDTO createPublic(PartyReqDTO dto) {
-        UserEntity organizer = userRepository.findByExternalId(dto.idOrganizer())
+    public PartyResDTO createPublic(PartyReqDTO dto, UUID currentUserId) {
+        UserEntity organizer = userRepository.findByExternalId(currentUserId)
                 .orElseThrow(() -> new EntityNotFoundException("Organizer no encontrado"));
 
         if (partyRepository.existsByTitle(dto.title())) {
@@ -93,7 +103,6 @@ public class PartyService implements IPartyService {
         }
 
         PartyEntity party = partyMapper.toEntity(dto);
-
         party.setPrice(dto.price());
         party.setOrganizer(organizer);
         party.setExternalId(UUID.randomUUID());
@@ -161,6 +170,22 @@ public class PartyService implements IPartyService {
                 .orElseThrow(() -> new EntityNotFoundException("Evento no encontrado"));
         party.setLogicState(Boolean.FALSE);
         partyRepository.save(party);
+    }
+    ///Funcion para saber si puede ver o no evento privado
+    private boolean canView(PartyEntity party, UUID currentUserId) {
+        if (party.getPartyAccesibility()) return true;
+        if (currentUserId == null) return false;
+
+        boolean isAdmin = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (isAdmin) return true;
+
+        if (party.getOrganizer().getExternalId().equals(currentUserId)) return true;
+
+        return false;
     }
 
 }
