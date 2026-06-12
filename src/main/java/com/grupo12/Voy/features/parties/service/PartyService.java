@@ -40,7 +40,7 @@ public class PartyService implements IPartyService {
                 PartySpecification.externalIdEqual(partyId),
                 PartySpecification.externalIdOrganizerEqual(organizerId),
                 PartySpecification.titleContains(title),
-                PartySpecification.isPublic(true),  // 👈 siempre público
+                PartySpecification.isPublic(true),
                 PartySpecification.cityContains(city),
                 PartySpecification.stateTrue()
         );
