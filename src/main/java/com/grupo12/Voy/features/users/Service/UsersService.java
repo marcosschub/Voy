@@ -72,12 +72,6 @@ public class UsersService implements IUsersService{
 
 
     @Override
-    public UserDto findByEmail(String userEmail){
-        return userMapper.userToDto(userRepository.findByEmail(userEmail)
-                .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado")));
-    }
-
-    @Override
     public void deleteUser(UUID externalId){
         userRepository.delete(getUser(externalId));
     }
@@ -114,6 +108,8 @@ public class UsersService implements IUsersService{
     public UserUpdateDto updateUser(UUID userUuid, UserUpdateDto userUpdateDto){
        UserEntity user = getUser(userUuid);
        user.setUsername(userUpdateDto.username());
+       user.getCredentials().setUsername(userUpdateDto.username());
+       user.getCredentials().setPassword(userUpdateDto.password());
        return userUpdateMapper.toDto(userRepository.save(user));
     }
 
@@ -191,6 +187,11 @@ public class UsersService implements IUsersService{
                 .findByExternalId(userId)
                 .orElseThrow(()->new EntityNotFoundException("Usuario no encontrado"));
         user.setAccesibilityUser(true);
+        RoleEntity rol = new RoleEntity(Roles.ROLE_ORGANIZATOR);
+
+        user.getCredentials().getRoles().remove(Roles.ROLE_USER);
+        user.getCredentials().getRoles().add(rol);
+
         return userMapper.userToDto(userRepository.save(user));
     }
 

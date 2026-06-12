@@ -14,7 +14,6 @@ import java.util.UUID;
 public interface IUsersService {
     UserDto findByExternalId(UUID userUuid);
     List<UserDto> getAll(String username, String email);
-    UserDto findByEmail(String userEmail);
     void deleteUser(UUID externalId);
     UserDto newUser(NewUserDto newUserDto);
     UserUpdateDto updateUser(UUID userUuid, UserUpdateDto userUpdateDto);
