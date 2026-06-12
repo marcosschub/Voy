@@ -120,6 +120,9 @@ public class UsersService implements IUsersService{
     }
 
     public List<UserFollowDto> alterFollow(UUID userId, UUID otherUserId){
+        if(userId.equals(otherUserId)){
+            throw new EntityDuplicatedException("No puede un usuario seguirse a si mismo");
+        }
         UserEntity user = getUser(userId);
         UserEntity otherUser = getUser(otherUserId);
         if(user.getFollowsList().contains(otherUser))
