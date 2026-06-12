@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public record TicketPrivateRequestDTO(@NotNull(message = "La cantidad no puede estar vacia, debe ser mayor a 0 y menor a 5")
                                       @Positive(message = "La cantidad debe ser mayor a 0")
-                                      @Max(value = 5,message = "El maximo permitido es 5 entradas")
+                                      @Max(value = 1,message = "El maximo permitido es 1 entrada")
                                       Integer quantity,
                                       @NotNull (message = "Ingrese el UUID de la fiesta")
                                       UUID partyIdExternal) {
