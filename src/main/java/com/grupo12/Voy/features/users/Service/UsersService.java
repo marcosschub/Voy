@@ -72,12 +72,6 @@ public class UsersService implements IUsersService{
 
 
     @Override
-    public UserDto findByEmail(String userEmail){
-        return userMapper.userToDto(userRepository.findByEmail(userEmail)
-                .orElseThrow(()-> new EntityNotFoundException("Usuario no encontrado")));
-    }
-
-    @Override
     public void deleteUser(UUID externalId){
         userRepository.delete(getUser(externalId));
     }
