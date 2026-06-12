@@ -7,8 +7,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record PartyReqPrivateDto(
-        @NotNull
-        UUID idOrganizer,
         @NotBlank(message = "El titulo es obligatorio")
         String title,
         @NotNull(message = "La descripcion no puede ser nula")

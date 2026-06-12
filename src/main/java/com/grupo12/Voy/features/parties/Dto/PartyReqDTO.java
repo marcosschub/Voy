@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 public record PartyReqDTO(
-        @NotNull
-        UUID idOrganizer,
         @NotBlank(message = "El titulo es obligatorio")
         String title,
         @NotNull(message = "La descripcion no puede ser nula")
