@@ -78,50 +78,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Registrar nuevo usuario", description = "Crea un nuevo usuario con rol USER por defecto. Lanza error si el email o username ya existen.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente",
-                    content = @Content(schema = @Schema(implementation = UserDto.class))),
-            @ApiResponse(responseCode = "400", description = "Datos de la solicitud inválidos", content = @Content),
-            @ApiResponse(responseCode = "409", description = "El email o username ya están en uso", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
-    })
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            content = @Content(schema = @Schema(implementation = NewUserDto.class,
-                    example = """
-                            {
-                              "email": "usuario@ejemplo.com",
-                              "username": "juanperez",
-                              "password": "Pass@1234",
-                              "birthdate": "2000-05-15"
-                            }
-                            """))
-    )
-    @PostMapping("/create")
-    ResponseEntity<UserDto> newUser(@RequestBody @Valid NewUserDto newUserDto){
-        return new ResponseEntity<>(userService.newUser(newUserDto),HttpStatus.CREATED);
-    }
-
-    @Operation(summary = "Actualizar cuenta propia", description = "El usuario autenticado actualiza su username y contraseña. El ID se obtiene del token JWT.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente",
-                    content = @Content(schema = @Schema(implementation = UserUpdateDto.class))),
-            @ApiResponse(responseCode = "400", description = "Datos de la solicitud inválidos", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado. Se requiere rol USER", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
-    })
-    @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            content = @Content(schema = @Schema(implementation = UserUpdateDto.class,
-                    example = """
-                            {
-                              "username": "nuevonombre",
-                              "password": "NewPass@5678"
-                            }
-                            """))
-    )
     @PutMapping("/update")
     @PreAuthorize("hasRole('USER')")
     ResponseEntity<UserUpdateDto> updateUser(@AuthenticationPrincipal(expression = "usuario.externalId") UUID idExternal,
@@ -208,6 +164,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     })
     @PatchMapping("/follow/party/{idParty}")
+    @PreAuthorize("hasRole('USER')")
     ResponseEntity<List<PartyUsersDto>> alterFollowParty(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idExternal,
                                                          @PathVariable UUID idParty){
         return ResponseEntity.ok(userService.alterFollowParty(idExternal,idParty));
@@ -221,6 +178,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     })
     @GetMapping("/myTickets")
+    @PreAuthorize("hasRole('USER')")
     ResponseEntity<List<TicketUsersDto>> listMyTickets(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idExternal){
         return ResponseEntity.ok((userService.listTickets(idExternal)));
     }
@@ -233,6 +191,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
     })
     @GetMapping("/myReceipts")
+    @PreAuthorize("hasRole('USER')")
     ResponseEntity<List<ReceiptResponseDTO>> listMyReceipts(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idExternal){
         return ResponseEntity.ok((userService.listReceipt(idExternal)));
     }
