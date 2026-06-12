@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,8 +39,15 @@ public class UserController {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.userId")
-    ResponseEntity<Void> deleteUser(@PathVariable UUID id){
+    @PreAuthorize("hasRole('ADMIN')")
+    ResponseEntity<Void> deleteUserByAdmin(@PathVariable UUID id){
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping
+    @PreAuthorize("hasRole('USER')")
+    ResponseEntity<Void> deleteUser(@AuthenticationPrincipal(expression = "usuario.externalId") UUID id){
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
@@ -55,6 +63,8 @@ public class UserController {
                                              @RequestBody @Valid UserUpdateDto userUpdateDto){
         return ResponseEntity.ok(userService.updateUser(idExternal, userUpdateDto));
     }
+
+
 
     @GetMapping("/{idExternal}/follows")
     @PreAuthorize("hasRole('USER')")
