@@ -11,24 +11,28 @@ API REST para la gestión de eventos, tickets, recibos, usuarios y etiquetas de 
 - [Documentación interactiva](#documentación-interactiva)
 - [Autenticación](#autenticación)
 - [Endpoints](#endpoints)
-  - [Users](#users---voy-users)
-  - [Parties](#parties---apiparties)
-  - [Tickets](#tickets---voytickets)
-  - [Receipts](#receipts---voyreceipts)
-  - [Tags](#tags---tags)
+    - [Auth](#auth---apiauth)
+    - [Users](#users---users)
+    - [Parties](#parties---apiparties)
+    - [Tickets](#tickets---apitickets)
+    - [Receipts](#receipts---apireceipts)
+    - [Tags](#tags---tags)
 - [DTOs principales](#dtos-principales)
 - [Validaciones](#validaciones)
+- [Integrantes](#integrantes)
 
 ---
 
 ## Tecnologías
 
-- **Java 17+**
-- **Spring Boot 3**
-- **Spring Security**
+- **Java 21**
+- **Spring Boot 4.0.6**
+- **Spring Security** + **JWT** (jjwt 0.13.0)
 - **Spring Data JPA**
-- **PostgreSQL**
-- **SpringDoc OpenAPI (Swagger UI)**
+- **Spring Validation**
+- **MySQL** (mysql-connector-j)
+- **MapStruct 1.6.3**
+- **SpringDoc OpenAPI 3.0.2** (Swagger UI)
 - **Lombok**
 
 ---
@@ -40,8 +44,12 @@ API REST para la gestión de eventos, tickets, recibos, usuarios y etiquetas de 
 git clone https://github.com/grupo12/voy.git
 cd voy
 
-# Configurar variables de entorno en application.properties o application.yml
-# DB_URL, DB_USERNAME, DB_PASSWORD
+# Configurar las siguientes variables de entorno:
+# DATABASE_NAME  → nombre de la base de datos MySQL
+# USERNAME       → usuario de la base de datos
+# PASSWORD       → contraseña de la base de datos
+# JWT.SECRET     → clave secreta para firmar los tokens JWT
+# JWT.EXPIRATION → tiempo de expiración del token (en milisegundos)
 
 # Compilar y ejecutar
 ./mvnw spring-boot:run
@@ -51,99 +59,115 @@ cd voy
 
 ## Documentación interactiva
 
-Una vez levantada la aplicación, la documentación Swagger UI está disponible en:
+Una vez levantada la aplicación, podés consultar todos los endpoints y probarlos directamente desde la interfaz de **Swagger UI** (provista por OpenAPI):
 
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
 
-El archivo OpenAPI en formato JSON se puede obtener en:
+El contrato OpenAPI en formato JSON está disponible en:
 
 ```
 http://localhost:8080/v3/api-docs
 ```
 
+Desde Swagger UI podés ver los DTOs esperados, los parámetros de cada endpoint, los códigos de respuesta y autenticarte para probar rutas protegidas.
+
 ---
 
 ## Autenticación
 
-Algunos endpoints requieren autenticación mediante rol. Se utiliza **Spring Security** con `@PreAuthorize`.
+Los endpoints protegidos usan **JWT** + **Spring Security** con `@PreAuthorize`. Para obtener un token, usá `POST /api/auth/login` con las credenciales. El token debe enviarse en el header `Authorization: Bearer <token>`.
 
 | Rol | Descripción |
 |-----|-------------|
 | `ROLE_USER` | Usuario estándar de la plataforma |
-| `ROLE_ADMIN` | Administrador con acceso a endpoints de confirmación y rechazo de compras |
+| `ROLE_ORGANIZATOR` | Organizador, puede crear y gestionar eventos públicos |
+| `ROLE_ADMIN` | Administrador con acceso total |
 
 ---
 
 ## Endpoints
 
-### Users — `/users`
+> La documentación completa de cada endpoint, incluyendo parámetros, cuerpos de solicitud y respuestas, está disponible en la interfaz OpenAPI (ver [Documentación interactiva](#documentación-interactiva)).
+
+### Auth — `/api/auth`
 
 | Método | Ruta | Descripción | Rol requerido |
 |--------|------|-------------|---------------|
-| `GET` | `/users` | Listar usuarios (filtros: `username`, `email`) | `ROLE_USER` |
-| `GET` | `/users/{idExternal}` | Buscar usuario por ID externo | — |
-| `GET` | `/users/{email}` | Buscar usuario por email | — |
-| `POST` | `/users` | Crear nuevo usuario | — |
-| `PUT` | `/users/{idExternal}` | Actualizar username y contraseña | — |
-| `DELETE` | `/users/{id}` | Eliminar usuario | — |
-| `GET` | `/users/{idExternal}/follows` | Listar usuarios seguidos | — |
-| `PATCH` | `/users/{idUser}/follow/user/{idOtherUser}` | Seguir / dejar de seguir un usuario | — |
-| `GET` | `/users/{idExternal}/followers` | Listar seguidores | — |
-| `GET` | `/users/{idExternal}/myParties` | Listar eventos creados por el usuario | — |
-| `GET` | `/users/{idExternal}/followParties` | Listar eventos seguidos | — |
-| `PATCH` | `/users/{idExternal}/follow/party/{idParty}` | Seguir / dejar de seguir un evento | — |
-| `GET` | `/users/{idExternal}/myTickets` | Listar tickets del usuario | — |
-| `GET` | `/users/{idExternal}/myReceipts` | Listar recibos del usuario | — |
+| `POST` | `/api/auth/register` | Registrar nuevo usuario y obtener datos | — |
+| `POST` | `/api/auth/login` | Autenticarse y obtener token JWT | — |
+
+---
+
+### Users — `/users`
+
+| Método | Ruta                               | Descripción | Rol requerido |
+|--------|------------------------------------|-------------|-------------|
+| `GET` | `/api/users`                       | Listar usuarios (filtros: `username`, `email`) | `ROLE_USER` |
+| `PUT` | `/api/users/update`                    | Actualizar username y contraseña (usuario autenticado) | `ROLE_USER` |
+| `DELETE` | `/api/users/{id}`                      | Eliminar usuario por ID (admin) | `ROLE_ADMIN` |
+| `DELETE` | `/api/users`                           | Eliminar cuenta propia | `ROLE_USER` |
+| `GET` | `/api/users/follows`                   | Listar usuarios seguidos | `ROLE_USER` |
+| `PATCH` | `/api/users/follow/user/{idOtherUser}` | Seguir / dejar de seguir un usuario | `ROLE_USER` |
+| `GET` | `/api/users/followers`                 | Listar seguidores | `ROLE_USER` |
+| `GET` | `/api/users/myParties`                 | Listar eventos creados por el usuario | `ROLE_USER` |
+| `GET` | `/api/users/followParties`             | Listar eventos seguidos | `ROLE_USER` |
+| `PATCH` | `/api/users/follow/party/{idParty}`    | Seguir / dejar de seguir un evento | `ROLE_USER` |
+| `GET` | `/api/users/myTickets`                 | Listar tickets del usuario | `ROLE_USER` |
+| `GET` | `/api/users/myReceipts`                | Listar recibos del usuario | `ROLE_USER` |
+| `PATCH` | `/api/users/verify/{idExternal}`       | Verificar / promover usuario | `ROLE_ADMIN` |
 
 ---
 
 ### Parties — `/api/parties`
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| `GET` | `/api/parties` | Listar eventos (filtros: `partyId`, `organizerId`, `title`, `isPublic`, `city`) |
-| `POST` | `/api/parties` | Crear nuevo evento |
-| `PUT` | `/api/parties/{id}` | Actualizar evento existente |
-| `POST` | `/api/parties/{id}/tag` | Agregar etiqueta a un evento |
-| `DELETE` | `/api/parties/{id}/tag` | Quitar etiqueta de un evento |
-| `DELETE` | `/api/parties/{id}` | Eliminar evento |
+| Método | Ruta | Descripción | Rol requerido |
+|--------|------|-------------|--------------|
+| `GET` | `/api/parties` | Listar eventos (filtros: `partyId`, `organizerId`, `title`, `isPublic`, `city`) | — |
+| `GET` | `/api/parties/{id}` | Obtener evento por ID | — |
+| `POST` | `/api/parties/public` | Crear evento público | `ROLE_ORGANIZATOR` |
+| `POST` | `/api/parties/private` | Crear evento privado | `ROLE_USER` |
+| `PUT` | `/api/parties/{id}` | Actualizar evento existente | `ROLE_ORGANIZATOR` o `ROLE_USER` |
+| `POST` | `/api/parties/{id}/tag` | Agregar etiqueta a un evento | `ROLE_ORGANIZATOR` |
+| `DELETE` | `/api/parties/{id}` | Eliminar evento | `ROLE_ORGANIZATOR` o `ROLE_ADMIN` |
 
 ---
 
-### Tickets — `/voy/tickets`
+### Tickets — `/api/tickets`
 
 | Método | Ruta | Descripción | Rol requerido |
 |--------|------|-------------|---------------|
-| `GET` | `/voy/tickets` | Listar tickets (filtros: `externalId`, `isConfirmed`, `title`, `usernameOrganizer`, `usernameUser`) | — |
-| `POST` | `/voy/tickets` | Comprar tickets (máx. 5 por compra) | — |
-| `PATCH` | `/voy/tickets/transferTicket/{userId}/{ticketId}` | Transferir ticket a otro usuario | — |
-| `PATCH` | `/voy/tickets/confirmTickets/{receiptExtId}` | Confirmar compra de tickets | `ROLE_ADMIN` |
-| `DELETE` | `/voy/tickets/returnTicket/{userId}/{ticketId}` | Devolver un ticket | — |
-| `DELETE` | `/voy/tickets/rejectPurchase/{receiptId}` | Rechazar y anular una compra | `ROLE_ADMIN` |
+| `GET` | `/api/tickets/admin` | Listar todos los tickets (filtros: `externalId`, `isConfirmed`, `title`, `usernameOrganizer`, `usernameUser`) | `ROLE_ADMIN` |
+| `GET` | `/api/tickets/organizer` | Listar tickets de los eventos propios (filtros: `externalId`, `isConfirmed`, `title`, `usernameUser`) | `ROLE_ORGANIZATOR` |
+| `GET` | `/api/tickets` | Listar tickets propios (filtros: `externalId`, `isConfirmed`, `title`, `usernameOrganizer`) | `ROLE_USER` |
+| `POST` | `/api/tickets` | Comprar tickets para evento público | `ROLE_USER` |
+| `POST` | `/api/tickets/private` | Obtener tickets para evento privado | `ROLE_USER` |
+| `PATCH` | `/api/tickets/transferTicket/{ticketId}` | Transferir ticket a otro usuario (`newUserExtId` como query param) | `ROLE_USER` |
+| `PATCH` | `/api/tickets/confirmTickets/{receiptExtId}` | Confirmar compra de tickets | `ROLE_ADMIN` |
+| `DELETE` | `/api/tickets/returnTicket/{ticketId}` | Devolver un ticket | `ROLE_USER` |
+| `DELETE` | `/api/tickets/rejectPurchase/{receiptId}` | Rechazar y anular una compra | `ROLE_ADMIN` |
 
 ---
 
-### Receipts — `/voy/receipts`
+### Receipts — `/api/receipts`
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| `GET` | `/voy/receipts` | Listar recibos (filtros: `externalId`, `paymentMethod`, `minPrice`, `maxPrice`, `minFinalPrice`, `maxFinalPrice`, `from`, `to`, `minQuantity`, `maxQuantity`) |
-| `POST` | `/voy/receipts` | Crear nuevo recibo |
-| `DELETE` | `/voy/receipts/{receiptExtId}/{userExtId}` | Eliminar recibo |
+| Método | Ruta | Descripción | Rol requerido |
+|--------|------|-------------|---------------|
+| `GET` | `/api/receipts/admin` | Listar todos los recibos (filtros: `externalId`, `userExtId`, `paymentMethod`, `minPrice`, `maxPrice`, `minFinalPrice`, `maxFinalPrice`, `from`, `to`, `minQuantity`, `maxQuantity`) | `ROLE_ADMIN` |
+| `GET` | `/api/receipts` | Listar recibos propios (mismos filtros, sin `userExtId`) | `ROLE_USER` |
+| `DELETE` | `/api/receipts/{receiptExtId}/{userExtId}` | Eliminar recibo | `ROLE_ADMIN` |
 
 ---
 
 ### Tags — `/tags`
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| `GET` | `/tags` | Listar etiquetas (filtro opcional: `name`) |
-| `GET` | `/tags/{name}` | Buscar etiqueta por nombre |
-| `POST` | `/tags` | Crear nueva etiqueta |
-| `PUT` | `/tags/{oldName}` | Actualizar nombre de etiqueta |
-| `DELETE` | `/tags` | Eliminar etiqueta (nombre en el body) |
+| Método | Ruta | Descripción | Rol requerido |
+|--------|------|-------------|---------------|
+| `GET` | `/api/tags` | Listar etiquetas (filtro opcional: `name`) | — |
+| `POST` | `/api/api/tags` | Crear nueva etiqueta | `ROLE_ADMIN` |
+| `PUT` | `/api/tags/{oldName}` | Actualizar nombre de etiqueta | `ROLE_ADMIN` |
+| `DELETE` | `/api/tags` | Eliminar etiqueta (nombre en el body) | `ROLE_ADMIN` |
 
 ---
 
@@ -159,10 +183,9 @@ Algunos endpoints requieren autenticación mediante rol. Se utiliza **Spring Sec
 }
 ```
 
-### `PartyReqDTO`
+### `PartyReqDTO` (evento público)
 ```json
 {
-  "idOrganizer": "550e8400-e29b-41d4-a716-446655440000",
   "title": "Fiesta de verano",
   "description": "Una gran fiesta al aire libre",
   "city": "Mar del Plata",
@@ -173,26 +196,13 @@ Algunos endpoints requieren autenticación mediante rol. Se utiliza **Spring Sec
 }
 ```
 
-### `TicketRequestDTO`
+### `TicketRequestDTO` (evento público)
 ```json
 {
   "price": 2000.00,
   "paymentMethod": "CREDIT_CARD",
   "quantity": 2,
-  "userIdExternal": "550e8400-e29b-41d4-a716-446655440000",
   "partyIdExternal": "123e4567-e89b-12d3-a456-426614174000"
-}
-```
-
-### `ReceiptRequestDTO`
-```json
-{
-  "price": 1500.00,
-  "paymentMethod": "CREDIT_CARD",
-  "quantity": 2,
-  "user": {
-    "externalId": "550e8400-e29b-41d4-a716-446655440000"
-  }
 }
 ```
 
@@ -212,11 +222,22 @@ Algunos endpoints requieren autenticación mediante rol. Se utiliza **Spring Sec
 | `password` | 8–20 caracteres, al menos una mayúscula, minúscula, número y carácter especial (`@#$%^&+=!`) |
 | `email` | Formato de email válido |
 | `birthdate` | Debe ser una fecha pasada |
-| `quantity` (tickets/receipts) | Entre 1 y 5 |
+| `quantity` (tickets) | Entre 1 y 5 |
 | `price` | Mayor o igual a 0 |
 | `dateTime` (evento) | Debe ser una fecha futura |
 | `guestLimit` | Mayor a 0 |
 | `name` (tag) | No vacío, máximo 30 caracteres |
+
+---
+
+## Integrantes
+
+| Nombre             |
+|--------------------|
+| Collovati, Mariano |
+| Palos, Lucia       |
+| Sanchez, Alejandro |
+| Schub, Marcos      |
 
 ---
 
