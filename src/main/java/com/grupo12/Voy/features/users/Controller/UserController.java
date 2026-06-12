@@ -52,11 +52,6 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/create")
-    ResponseEntity<UserDto> newUser(@RequestBody @Valid NewUserDto newUserDto){
-        return new ResponseEntity<>(userService.newUser(newUserDto),HttpStatus.CREATED);
-    }
-
     @PutMapping("/update")
     @PreAuthorize("hasRole('USER')")
     ResponseEntity<UserUpdateDto> updateUser(@AuthenticationPrincipal(expression = "usuario.externalId") UUID idExternal,
@@ -97,17 +92,20 @@ public class UserController {
     }
 
     @PatchMapping("/follow/party/{idParty}")
+    @PreAuthorize("hasRole('USER')")
     ResponseEntity<List<PartyUsersDto>> alterFollowParty(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idExternal,
                                                          @PathVariable UUID idParty){
         return ResponseEntity.ok(userService.alterFollowParty(idExternal,idParty));
     }
 
     @GetMapping("/myTickets")
+    @PreAuthorize("hasRole('USER')")
     ResponseEntity<List<TicketUsersDto>> listMyTickets(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idExternal){
         return ResponseEntity.ok((userService.listTickets(idExternal)));
     }
 
     @GetMapping("/myReceipts")
+    @PreAuthorize("hasRole('USER')")
     ResponseEntity<List<ReceiptResponseDTO>> listMyReceipts(@AuthenticationPrincipal(expression = "usuario.externalId")UUID idExternal){
         return ResponseEntity.ok((userService.listReceipt(idExternal)));
     }
