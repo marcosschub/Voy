@@ -1,4 +1,4 @@
-package com.grupo12.Voy.common.models;
+package com.grupo12.Voy.common.exceptions.models;
 
 import lombok.Builder;
 

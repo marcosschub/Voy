@@ -1,6 +1,7 @@
-package com.grupo12.Voy.common.exceptions;
+package com.grupo12.Voy.common.exceptions.handler;
 
-import com.grupo12.Voy.common.models.ErrorDetails;
+import com.grupo12.Voy.common.exceptions.*;
+import com.grupo12.Voy.common.exceptions.models.ErrorDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -61,7 +62,7 @@ public class ExceptionHandlerGlobal {
                 .getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage() + '\n')
                 .collect(Collectors.joining());
         ErrorDetails response = new ErrorDetails(errorList,
                 request.getDescription(false),
