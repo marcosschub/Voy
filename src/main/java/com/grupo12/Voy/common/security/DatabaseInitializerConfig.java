@@ -8,15 +8,22 @@ import com.grupo12.Voy.common.security.models.RoleEntity;
 import com.grupo12.Voy.common.security.repository.CredentialsRepository;
 import com.grupo12.Voy.common.security.repository.PermitRepository;
 import com.grupo12.Voy.common.security.repository.RoleRepository;
+import com.grupo12.Voy.features.parties.models.PartyEntity;
+import com.grupo12.Voy.features.parties.repository.PartyRepository;
+import com.grupo12.Voy.features.tags.TagsRepository;
+import com.grupo12.Voy.features.tags.models.TagEntity;
 import com.grupo12.Voy.features.users.UserRepository;
 import com.grupo12.Voy.features.users.models.UserEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Fallback;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Configuration
@@ -29,6 +36,8 @@ public class DatabaseInitializerConfig {
             RoleRepository roleRepository,
             CredentialsRepository credentialsRepository,
             UserRepository userRepository,
+            TagsRepository tagsRepository,
+            PartyRepository partyRepository,
             PasswordEncoder passwordEncoder          // Inyectamos tu PasswordEncoder real
     ) {
         return args -> {
@@ -89,11 +98,31 @@ public class DatabaseInitializerConfig {
                 creds.setUsername("user" + i);
                 creds.setPassword(passwordEncriptada);
                 // El usuario 9 lo creamos deshabilitado para mostrar la excepción en clase
-                creds.setEnabled(i != 9);
+                creds.setEnabled(true);
                 creds.setUsuario(user);
                 creds.getRoles().add(roleUser);
                 credentialsRepository.save(creds);
             }
+
+            for (int i=0; i<3; i++){
+                TagEntity tag = new TagEntity();
+                tag.setName("testTag"+i);
+                tagsRepository.save(tag);
+            }
+
+            PartyEntity party = new PartyEntity();
+            party.setExternalId(UUID.randomUUID());
+            party.getTagsList().add(tagsRepository.findById(1L).orElseThrow());
+            party.setAdress("Constitucion 0");
+            party.setCity("Mar del plata");
+            party.setDescription("Una fiesta en el mar");
+            party.setTitle("Fiesta en el mar");
+            party.setPrice(BigDecimal.ZERO);
+            party.setDateTime(LocalDateTime.now().plusDays(10));
+            party.setGuestLimit(20);
+            party.setPartyAccesibility(true);
+            party.setOrganizer(userRepository.findById(2L).orElseThrow());
+            partyRepository.save(party);
 
             System.out.println(">> ¡Datos de prueba cargados exitosamente usando el PasswordEncoder");
         };
