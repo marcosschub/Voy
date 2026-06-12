@@ -1,6 +1,7 @@
 package com.grupo12.Voy.features.parties.mapper;
 
 import com.grupo12.Voy.features.parties.Dto.PartyReqDTO;
+import com.grupo12.Voy.features.parties.Dto.PartyReqPrivateDto;
 import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
 import com.grupo12.Voy.features.parties.Dto.PartyUsersDto;
 import com.grupo12.Voy.features.parties.models.PartyEntity;
@@ -22,7 +23,7 @@ public interface PartyMapper {
     List<PartyResDTO> toResDTOList (List<PartyEntity> parties);
 
     PartyEntity toEntity(PartyReqDTO partyReqDTO);
-
+    PartyEntity toEntity(PartyReqPrivateDto partyResDTO);
 
     PartyUsersDto toUserFromEntity(PartyEntity party);
 

@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface PartyRepository extends JpaRepository<PartyEntity,Long>, JpaSpecificationExecutor<PartyEntity> {
-    List<PartyEntity> findByLogicStateTrue();
     Optional<PartyEntity> findByExternalIdAndLogicStateTrue(UUID externalId);
     List<PartyEntity> findByOrganizerExternalIdAndLogicStateTrue(UUID organizerId);
     Optional<PartyEntity> findByTitleAndPartyAccesibilityAndLogicStateTrue(String title, Boolean partyAccesibility);

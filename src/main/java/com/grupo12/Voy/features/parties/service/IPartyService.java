@@ -1,6 +1,7 @@
 package com.grupo12.Voy.features.parties.service;
 
 import com.grupo12.Voy.features.parties.Dto.PartyReqDTO;
+import com.grupo12.Voy.features.parties.Dto.PartyReqPrivateDto;
 import com.grupo12.Voy.features.parties.Dto.PartyResDTO;
 import com.grupo12.Voy.features.tags.dto.TagsDTO;
 
@@ -12,17 +13,9 @@ public interface IPartyService {
 
     PartyResDTO getByExternalId(UUID id);
 
-    List<PartyResDTO> getByOrganizer(UUID organizerId);
+    PartyResDTO createPublic(PartyReqDTO dto);
 
-    PartyResDTO getByTitle(String title);
-
-    List<PartyResDTO> getByType(Boolean isPublic);
-
-    List<PartyResDTO> getByCity(String city);
-
-    List<PartyResDTO> getByStatus(Boolean status);
-
-    PartyResDTO create(PartyReqDTO dto);
+    PartyResDTO createPrivate(PartyReqPrivateDto dto);
 
     PartyResDTO update(UUID idExternal, PartyReqDTO dto);
 
