@@ -2,6 +2,7 @@ package com.grupo12.Voy.features.tickets;
 
 import com.grupo12.Voy.features.parties.mapper.PartyMapper;
 import com.grupo12.Voy.features.receipts.ReceiptMapper;
+import com.grupo12.Voy.features.tickets.models.DTO.TicketPrivateRequestDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketRequestDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketResponseDTO;
 import com.grupo12.Voy.features.tickets.models.DTO.TicketUsersDto;
@@ -23,8 +24,10 @@ public interface TicketMapper {
     @Mapping(target = "party", source = "party")
     TicketUsersDto toUsersDto(TicketEntity ticket);
 
-    @Mapping(target = "user.externalId", source = "userIdExternal")
     @Mapping(target = "party.externalId", source = "partyIdExternal")
     TicketEntity toEntity(TicketRequestDTO ticket);
+
+    @Mapping(target = "paymentMethod",constant = "Gratis")
+    TicketRequestDTO toRequestDto(TicketPrivateRequestDTO ticket);
 
 }
