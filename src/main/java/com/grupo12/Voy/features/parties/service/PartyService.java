@@ -35,13 +35,12 @@ public class PartyService implements IPartyService {
 
 
     @Override
-    public List<PartyResDTO> getAll(UUID partyId, UUID organizerId, String title,
-                                    Boolean isPublic, String city, UUID currentUserId) {
+    public List<PartyResDTO> getAll(UUID partyId, UUID organizerId, String title, String city) {
         PredicateSpecification<PartyEntity> spec = PredicateSpecification.allOf(
                 PartySpecification.externalIdEqual(partyId),
                 PartySpecification.externalIdOrganizerEqual(organizerId),
                 PartySpecification.titleContains(title),
-                PartySpecification.isPublic(isPublic),
+                PartySpecification.isPublic(true),  // 👈 siempre público
                 PartySpecification.cityContains(city),
                 PartySpecification.stateTrue()
         );
@@ -49,7 +48,6 @@ public class PartyService implements IPartyService {
         return partyRepository
                 .findAll(spec)
                 .stream()
-                .filter(p -> canView(p, currentUserId))
                 .map(partyMapper::toResDTO)
                 .toList();
     }
