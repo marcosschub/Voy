@@ -37,6 +37,6 @@ public class PartySpecification {
     }
 
     public static PredicateSpecification<PartyEntity> stateTrue(){
-        return ((root,cb) -> cb.isTrue(root.get("state")));
+        return ((root,cb) -> cb.isTrue(root.get("logicState")));
     }
 }

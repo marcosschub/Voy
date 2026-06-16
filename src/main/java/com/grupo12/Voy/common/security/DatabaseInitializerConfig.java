@@ -18,7 +18,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Fallback;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
@@ -32,13 +31,13 @@ public class DatabaseInitializerConfig {
     @Bean
     @Transactional
     public CommandLineRunner initDatabase(
-            PermitRepository permitRepository,     // Asumiendo que tenés estos repositorios
+            PermitRepository permitRepository,
             RoleRepository roleRepository,
             CredentialsRepository credentialsRepository,
             UserRepository userRepository,
             TagsRepository tagsRepository,
             PartyRepository partyRepository,
-            PasswordEncoder passwordEncoder          // Inyectamos tu PasswordEncoder real
+            PasswordEncoder passwordEncoder
     ) {
         return args -> {
             // 1. Evitar duplicados si el ddl-auto no está en create-drop
@@ -67,7 +66,7 @@ public class DatabaseInitializerConfig {
 
             // 4. Crear los 10 usuarios de prueba en un bucle
             String passwordPlano = "Password123#";
-            String passwordEncriptada = passwordEncoder.encode(passwordPlano); // <-- ACÁ SUCEDE LA MAGIA
+            String passwordEncriptada = passwordEncoder.encode(passwordPlano);
 
             // Ejemplo: Crear Admin
             UserEntity adminUser = new UserEntity();
@@ -79,7 +78,7 @@ public class DatabaseInitializerConfig {
 
             CredentialsEntity adminCreds = new CredentialsEntity();
             adminCreds.setUsername("admin");
-            adminCreds.setPassword(passwordEncriptada); // Guardamos el hash generado en vivo
+            adminCreds.setPassword(passwordEncriptada);
             adminCreds.setEnabled(true);
             adminCreds.setUsuario(adminUser);
             adminCreds.getRoles().add(roleAdmin);
