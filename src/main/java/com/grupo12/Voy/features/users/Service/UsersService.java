@@ -108,8 +108,15 @@ public class UsersService implements IUsersService{
     public UserUpdateDto updateUser(UUID userUuid, UserUpdateDto userUpdateDto){
        UserEntity user = getUser(userUuid);
        user.setUsername(userUpdateDto.username());
-       user.getCredentials().setUsername(userUpdateDto.username());
-       user.getCredentials().setPassword(userUpdateDto.password());
+       CredentialsEntity credential = CredentialsEntity.builder()
+               .enabled(true)
+               .username(userUpdateDto.username())
+               .usuario(user)
+               .roles(user.getCredentials().getRoles())
+               .password(passwordEncoder.encode(userUpdateDto.password()))
+               .build();
+
+       user.setCredentials(credential);
        return userUpdateMapper.toDto(userRepository.save(user));
     }
 
@@ -155,6 +162,9 @@ public class UsersService implements IUsersService{
         PartyEntity party = partyRepository
                 .findByExternalIdAndLogicStateTrue(partyId)
                 .orElseThrow(()-> new EntityNotFoundException("Evento no encontrado"));
+        if(userId.equals(party.getOrganizer().getExternalId())){
+            throw new EntityDuplicatedException("No puede un usuario seguir sus propias fiestas");
+        }
         if(user.getFollowedParties().contains(party))
             user.getFollowedParties().remove(party);
         else
