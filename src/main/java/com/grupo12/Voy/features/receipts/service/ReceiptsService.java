@@ -106,13 +106,10 @@ public class ReceiptsService implements IReceiptService {
     }
 
     @Transactional
-    public void deleteReceipt(UUID externalID, UUID userExtId){
+    public void deleteReceipt(UUID externalID){
         ReceiptEntity receipt = receiptRepository
                 .findByExternalId(externalID)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el recibo"));
-        if(!userExtId.equals(receipt.getUser().getExternalId())){
-            throw new NotAllowedException("Para eliminar el recibo debes ser el usuario que lo adquirio");
-        }
         if(!receipt.getStatus().equals(Status.RECHAZADA)){
             throw new NotAllowedException("Solo se puede eliminar un recibo de compra cuando la misma fue rechazada");
         }
