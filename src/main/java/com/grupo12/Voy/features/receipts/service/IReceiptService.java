@@ -24,5 +24,5 @@ public interface IReceiptService {
             LocalDateTime from, LocalDateTime to,
             Integer minQuantity, Integer maxQuantity);
     ReceiptResponseDTO createReceipt(ReceiptRequestDTO dto);
-    void deleteReceipt(UUID externalID,UUID userExtId);
+    void deleteReceipt(UUID externalID);
 }
