@@ -94,20 +94,19 @@ public class ReceiptsController {
 
     @Operation(
             summary = "Eliminar recibo",
-            description = "Elimina un recibo de compra. Requiere rol ADMIN. El recibo solo puede eliminarse si pertenece al usuario indicado y si su estado es RECHAZADA."
+            description = "Elimina un recibo de compra. Requiere rol ADMIN. El recibo solo puede eliminarse si su estado es RECHAZADA."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Recibo eliminado correctamente", content = @Content),
             @ApiResponse(responseCode = "401", description = "No autenticado", content = @Content),
             @ApiResponse(responseCode = "403", description = "No tiene permisos de ADMIN", content = @Content),
             @ApiResponse(responseCode = "404", description = "Recibo no encontrado", content = @Content),
-            @ApiResponse(responseCode = "409", description = "No se puede eliminar: el usuario indicado no es el propietario del recibo o el recibo no está en estado RECHAZADA", content = @Content)
+            @ApiResponse(responseCode = "409", description = "No se puede eliminar: el recibo no está en estado RECHAZADA", content = @Content)
     })
-    @DeleteMapping("/{receiptExtId}/{userExtId}")
+    @DeleteMapping("/{receiptExtId}")
     @PreAuthorize("hasRole('ADMIN')")
-    ResponseEntity<ReceiptResponseDTO> deleteReceipt(@PathVariable UUID receiptExtId,
-                                                     @PathVariable UUID userExtId){
-        receiptsService.deleteReceipt(receiptExtId,userExtId);
+    ResponseEntity<ReceiptResponseDTO> deleteReceipt(@PathVariable UUID receiptExtId){
+        receiptsService.deleteReceipt(receiptExtId);
         return ResponseEntity.noContent().build();
     }
 
